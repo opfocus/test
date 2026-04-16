@@ -1,0 +1,2726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ 家庭积分商城 ✨</title>
+<style>
+
+:root {
+  --sky: #87CEEB;
+  --grass: #5a9e3e;
+  --warm: #f5e6d0;
+  --wood: #8B6914;
+  --wood-dark: #6B4F12;
+  --accent: #e85d75;
+  --gold: #FFD700;
+  --gold-dark: #DAA520;
+  --cream: #FFF8DC;
+  --pink: #FFB6C1;
+  --brown: #8B4513;
+  --mint: #98FFB3;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'ZCOOL KuaiLe', cursive, sans-serif;
+  background: linear-gradient(180deg, #87CEEB 0%, #b5e8f7 30%, #d4f0d4 55%, #7ec850 70%, #5a9e3e 85%, #3d7a28 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #4a3520;
+}
+
+/* ===== Clouds ===== */
+.clouds { position: fixed; top: 0; left: 0; width: 100%; height: 200px; pointer-events: none; z-index: 0; overflow: hidden; }
+.cloud {
+  position: absolute; background: white; border-radius: 50%; opacity: 0.85;
+  animation: floatCloud linear infinite;
+}
+.cloud::before, .cloud::after {
+  content: ''; position: absolute; background: white; border-radius: 50%;
+}
+.cloud:nth-child(1) { width:120px; height:50px; top:30px; animation-duration:25s; }
+.cloud:nth-child(1)::before { width:60px; height:60px; top:-30px; left:20px; }
+.cloud:nth-child(1)::after { width:80px; height:50px; top:-20px; left:50px; }
+.cloud:nth-child(2) { width:150px; height:60px; top:80px; animation-duration:35s; animation-delay:-10s; }
+.cloud:nth-child(2)::before { width:70px; height:70px; top:-35px; left:30px; }
+.cloud:nth-child(2)::after { width:90px; height:55px; top:-25px; left:60px; }
+.cloud:nth-child(3) { width:100px; height:40px; top:50px; animation-duration:30s; animation-delay:-20s; }
+.cloud:nth-child(3)::before { width:50px; height:50px; top:-25px; left:15px; }
+.cloud:nth-child(3)::after { width:70px; height:45px; top:-18px; left:40px; }
+.cloud:nth-child(4) { width:80px; height:35px; top:120px; animation-duration:20s; animation-delay:-5s; }
+.cloud:nth-child(4)::before { width:45px; height:45px; top:-22px; left:12px; }
+.cloud:nth-child(4)::after { width:55px; height:35px; top:-15px; left:35px; }
+
+@keyframes floatCloud { from { left: -200px; } to { left: 110%; } }
+
+/* ===== Floating Particles ===== */
+.particle {
+  position: fixed; pointer-events: none; z-index: 0; opacity: 0.4;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+  50% { opacity: 0.7; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+/* ===== Screens ===== */
+.screen { display:none; position:relative; z-index:1; min-height:100vh; padding:20px; padding-bottom:100px; }
+.screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+
+/* ===== Opening Ceremony ===== */
+#opening-ceremony { text-align:center; }
+
+/* ===== Cartoon Shop Building ===== */
+.shop-building {
+  width: 360px; height: 420px; position: relative; margin: 20px auto;
+}
+
+/* Sky behind shop */
+.shop-sky {
+  position: absolute; top: -80px; left: -40px; right: -40px; height: 80px;
+  background: linear-gradient(180deg, #87CEEB, #b5e8f7);
+  border-radius: 0 0 50% 50%;
+}
+
+/* Chimney */
+.shop-chimney {
+  position: absolute; top: -75px; right: 40px; width: 30px; height: 50px;
+  background: linear-gradient(90deg, #c0392b, #e74c3c);
+  border-radius: 5px 5px 0 0; z-index: 3;
+  opacity: 0; transition: all 0.6s ease;
+}
+.shop-chimney::after {
+  content: ''; position: absolute; top: -8px; left: -5px; right: -5px; height: 10px;
+  background: #a93226; border-radius: 3px;
+}
+.shop-smoke {
+  position: absolute; top: -95px; right: 35px; font-size: 20px;
+  opacity: 0; transition: all 0.6s ease;
+  animation: smokeRise 3s ease infinite;
+}
+@keyframes smokeRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  100% { transform: translateY(-30px) scale(1.5); opacity: 0; }
+}
+
+/* Roof */
+.shop-roof-main {
+  position: absolute; top: -50px; left: -30px; right: -30px; height: 70px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c, #c0392b);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  z-index: 2; opacity: 0; transition: all 0.6s ease;
+  border-bottom: 4px solid #a93226;
+}
+.shop-roof-main::after {
+  content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 8px;
+  background: repeating-linear-gradient(90deg, #f5e6d0 0, #f5e6d0 20px, #8B6914 20px, #8B6914 22px);
+}
+
+/* Sign hanging from roof */
+.shop-sign-board {
+  position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+  z-index: 5; opacity: 0; transition: all 0.6s ease;
+}
+.shop-sign-board .sign-board {
+  background: linear-gradient(135deg, #FFF8DC, #FFE4B5);
+  border: 3px solid var(--wood); border-radius: 10px;
+  padding: 8px 24px; font-size: 20px; color: var(--accent);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  position: relative;
+}
+.shop-sign-board .sign-rope {
+  width: 3px; height: 20px; background: var(--wood); margin: 0 auto;
+}
+.shop-sign-board .sign-board::before,
+.shop-sign-board .sign-board::after {
+  content: '⭐'; position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 14px;
+}
+.shop-sign-board .sign-board::before { left: 6px; }
+.shop-sign-board .sign-board::after { right: 6px; }
+
+/* Main building body */
+.shop-body {
+  position: absolute; top: 20px; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, #FFE4B5, #FFDAB9, #f5e6d0);
+  border: 4px solid var(--wood); border-radius: 8px 8px 0 0;
+  overflow: hidden; opacity: 0; transition: all 0.6s ease;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+/* Brick pattern */
+.shop-body::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 28px,
+    rgba(139,105,20,0.08) 28px, rgba(139,105,20,0.08) 30px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    transparent, transparent 58px,
+    rgba(139,105,20,0.06) 58px, rgba(139,105,20,0.06) 60px
+  );
+}
+
+/* Awning */
+.shop-awning {
+  position: absolute; top: 0; left: -10px; right: -10px; height: 35px;
+  background: repeating-linear-gradient(90deg, #FF69B4 0, #FF69B4 25px, #fff 25px, #fff 50px);
+  border-radius: 0 0 50% 50% / 0 0 15px 15px;
+  border: 3px solid var(--wood); border-top: none;
+  z-index: 2; opacity: 0; transition: all 0.6s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Display windows */
+.shop-windows {
+  position: absolute; top: 50px; left: 15px; right: 15px; height: 130px;
+  display: flex; gap: 10px; z-index: 1;
+  opacity: 0; transition: all 0.6s ease;
+}
+.shop-window-item {
+  flex: 1; min-width: 0; background: linear-gradient(180deg, #e8f4ff, #cce5ff);
+  border: 2px solid var(--wood); border-radius: 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(135,206,235,0.3);
+  padding: 4px 0;
+}
+.shop-window-item::before {
+  content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%);
+  border-radius: 10px; z-index: 1;
+}
+.window-emoji { font-size: 26px; z-index: 2; animation: windowBounce 2s ease infinite; }
+.window-label { font-size: 9px; color: var(--brown); margin-top: 2px; z-index: 2; }
+
+@keyframes windowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Shelf with items */
+.shop-shelf {
+  position: absolute; top: 195px; left: 10px; right: 10px; height: 80px;
+  background: linear-gradient(180deg, #d4a35a, #c4933a);
+  border: 2px solid var(--wood-dark); border-radius: 4px;
+  display: flex; align-items: flex-end; justify-content: space-around;
+  padding: 0 8px 5px;
+  opacity: 0; transition: all 0.6s ease;
+}
+.shelf-item { font-size: 26px; animation: shelfWiggle 3s ease infinite; }
+.shelf-item:nth-child(2) { animation-delay: 0.5s; }
+.shelf-item:nth-child(3) { animation-delay: 1s; }
+.shelf-item:nth-child(4) { animation-delay: 1.5s; }
+.shelf-item:nth-child(5) { animation-delay: 2s; }
+@keyframes shelfWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+/* Door */
+.shop-door-main {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 70px; height: 90px; background: linear-gradient(180deg, #6B4F12, #5a3e0a);
+  border: 3px solid var(--wood); border-radius: 35px 35px 0 0;
+  z-index: 2; opacity: 0; transition: all 0.6s ease;
+}
+.shop-door-main::before {
+  content: ''; position: absolute; right: 12px; top: 50%;
+  width: 8px; height: 8px; background: var(--gold);
+  border-radius: 50%; border: 1px solid var(--gold-dark);
+  box-shadow: 0 0 5px rgba(255,215,0,0.5);
+}
+.shop-door-main::after {
+  content: 'OPEN'; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: var(--gold); letter-spacing: 1px;
+}
+
+/* Flower boxes */
+.shop-flower-box {
+  position: absolute; bottom: 0; width: 80px; height: 30px;
+  background: linear-gradient(180deg, #8B6914, #6B4F12);
+  border: 2px solid var(--wood-dark); border-radius: 4px;
+  display: flex; align-items: flex-end; justify-content: center;
+  font-size: 22px; padding-bottom: 2px;
+  opacity: 0; transition: all 0.6s ease;
+}
+.shop-flower-box.left { left: 5px; }
+.shop-flower-box.right { right: 5px; }
+
+/* Flag/banner */
+.shop-flag {
+  position: absolute; top: -65px; left: -15px; font-size: 28px;
+  opacity: 0; transition: all 0.6s ease;
+  animation: flagWave 2s ease infinite;
+}
+@keyframes flagWave {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+/* Ground / Path */
+.shop-ground {
+  position: absolute; bottom: -25px; left: -50px; right: -50px; height: 30px;
+  background: linear-gradient(180deg, #7ec850, #5a9e3e);
+  border-radius: 50%;
+}
+
+.decoration-item {
+  position: absolute; font-size: 28px; opacity: 0;
+  transition: all 0.6s ease;
+}
+.decoration-item.placed { opacity: 1; transform: scale(1); }
+
+.family-characters {
+  display: flex; gap: 20px; justify-content: center; margin: 20px 0;
+  font-size: 50px;
+}
+.family-characters span {
+  animation: bounce 1s ease infinite;
+}
+.family-characters span:nth-child(2) { animation-delay: 0.2s; }
+.family-characters span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.btn {
+  padding: 14px 36px; font-size: 20px; font-family: 'ZCOOL KuaiLe', cursive;
+  border: 3px solid var(--wood); border-radius: 30px; cursor: pointer;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: var(--brown); box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.3s; user-select: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.btn:active { transform: translateY(1px); }
+.btn.pink { background: linear-gradient(135deg, #FFB6C1, #FF69B4); }
+.btn.green { background: linear-gradient(135deg, #98FB98, #32CD32); }
+.btn.blue { background: linear-gradient(135deg, #87CEEB, #4169E1); color: white; }
+
+/* ===== Hanging Sign Ceremony ===== */
+#hanging-ceremony { text-align: center; }
+.hanging-sign {
+  width: 220px; height: 150px; background: linear-gradient(135deg, #FFF8DC, #FFE4B5);
+  border: 4px solid var(--wood); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: var(--accent); margin: 30px auto;
+  position: relative; cursor: pointer; transition: all 0.5s;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+.hanging-sign::before {
+  content: ''; position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 30px; background: var(--wood);
+}
+.hanging-sign::after {
+  content: '⭐'; position: absolute; top: 8px; right: 10px; font-size: 16px;
+}
+.hanging-sign:hover { transform: scale(1.05); }
+.hanging-sign.hung {
+  animation: hangSign 0.8s ease;
+  background: linear-gradient(135deg, #FFF8DC, #FFE4B5);
+  box-shadow: 0 8px 30px rgba(255,215,0,0.3);
+}
+@keyframes hangSign {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(-10deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.rope {
+  width: 4px; height: 40px; background: var(--wood); margin: 0 auto;
+}
+
+/* ===== Dice ===== */
+.dice-container { margin: 30px 0; perspective: 600px; }
+.dice {
+  width: 120px; height: 120px; margin: 0 auto; position: relative;
+  transform-style: preserve-3d; transition: transform 0.1s;
+  cursor: pointer;
+}
+.dice.rolling { animation: rollDice 0.1s linear infinite; }
+@keyframes rollDice {
+  0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+.dice-face {
+  position: absolute; width: 120px; height: 120px;
+  background: white; border: 3px solid #ccc; border-radius: 16px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  padding: 15px; gap: 8px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+}
+.dot {
+  width: 22px; height: 22px; background: #333; border-radius: 50%;
+}
+.dice-result {
+  font-size: 64px; color: var(--gold-dark); margin: 10px 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ===== Rules ===== */
+.rules-card {
+  background: var(--cream); border: 3px solid var(--wood);
+  border-radius: 20px; padding: 25px; max-width: 500px; margin: 20px auto;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  position: relative; overflow: hidden;
+}
+.rules-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+  background: linear-gradient(90deg, #FF69B4, #FFD700, #87CEEB, #98FB98);
+}
+.rules-card h3 { color: var(--accent); margin-bottom: 12px; font-size: 22px; }
+.rule-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px dashed #ddd; font-size: 16px;
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-icon { font-size: 24px; }
+
+/* ===== Main Dashboard ===== */
+#main-app { padding: 10px; align-items: stretch; justify-content: flex-start; }
+
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,248,220,0.95); border: 3px solid var(--wood);
+  border-radius: 20px; padding: 12px 20px; margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  flex-wrap: wrap; gap: 10px;
+}
+.coin-display {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 22px; color: var(--gold-dark);
+}
+.coin-icon {
+  width: 32px; height: 32px; background: radial-gradient(circle at 30% 30%, #FFE44D, #DAA520);
+  border-radius: 50%; border: 2px solid #B8860B;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #8B6914; font-weight: bold;
+}
+.level-badge {
+  background: linear-gradient(135deg, #FF69B4, #FF1493);
+  color: white; padding: 6px 16px; border-radius: 20px;
+  font-size: 16px; box-shadow: 0 2px 8px rgba(255,105,180,0.4);
+}
+.day-counter {
+  font-size: 16px; color: var(--brown);
+}
+
+.tab-bar {
+  display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center;
+}
+.tab-btn {
+  padding: 10px 20px; font-size: 16px; font-family: 'ZCOOL KuaiLe', cursive;
+  border: 2px solid var(--wood); border-radius: 20px; cursor: pointer;
+  background: var(--cream); color: var(--brown); transition: all 0.3s;
+}
+.tab-btn.active {
+  background: linear-gradient(135deg, #FFD700, #FFA500); color: var(--brown);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+.tab-btn:hover { transform: translateY(-2px); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== Check-in Cards ===== */
+.checkin-card {
+  background: var(--cream); border: 3px solid var(--wood);
+  border-radius: 20px; padding: 20px; margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  position: relative;
+}
+.checkin-card h3 {
+  font-size: 20px; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.task-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px; margin: 8px 0; background: white;
+  border-radius: 12px; border: 2px solid #f0e0c0;
+  transition: all 0.3s;
+}
+.task-item:hover { border-color: var(--gold); }
+.task-info { display: flex; align-items: center; gap: 10px; }
+.task-emoji { font-size: 28px; }
+.task-name { font-size: 16px; }
+.task-status { font-size: 14px; color: #888; }
+
+.rating-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.rating-btn {
+  padding: 6px 14px; border: 2px solid; border-radius: 15px;
+  font-family: 'ZCOOL KuaiLe', cursive; font-size: 14px;
+  cursor: pointer; transition: all 0.3s; background: white;
+}
+.rating-btn.excellent { border-color: #FF1493; color: #FF1493; }
+.rating-btn.excellent:hover, .rating-btn.excellent.selected { background: #FF1493; color: white; }
+.rating-btn.good { border-color: #FF8C00; color: #FF8C00; }
+.rating-btn.good:hover, .rating-btn.good.selected { background: #FF8C00; color: white; }
+.rating-btn.average { border-color: #4169E1; color: #4169E1; }
+.rating-btn.average:hover, .rating-btn.average.selected { background: #4169E1; color: white; }
+.rating-btn.cancel { border-color: #ccc; color: #ccc; font-size: 12px; padding: 6px 10px; }
+.rating-btn.cancel:hover { background: #f0e0e0; color: #c0392b; border-color: #e8b4b4; }
+
+.complete-day-btn {
+  width: 100%; margin-top: 15px; padding: 16px; font-size: 22px;
+}
+
+/* ===== Coin Rain ===== */
+.coin-rain-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 100; overflow: hidden;
+}
+.falling-coin {
+  position: absolute; top: -50px;
+  width: 36px; height: 36px;
+  background: radial-gradient(circle at 30% 30%, #FFE44D, #DAA520);
+  border-radius: 50%; border: 2px solid #B8860B;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #8B6914; font-weight: bold;
+  animation: coinFall linear forwards;
+  box-shadow: 0 2px 8px rgba(218,165,32,0.4);
+}
+@keyframes coinFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===== Virtual Items ===== */
+.items-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px; margin: 15px 0;
+}
+.item-card {
+  background: white; border: 2px solid #f0e0c0; border-radius: 15px;
+  padding: 12px; text-align: center; transition: all 0.3s;
+}
+.item-card.collected {
+  border-color: var(--gold); background: linear-gradient(135deg, #FFF8DC, #FFE4B5);
+  box-shadow: 0 2px 10px rgba(255,215,0,0.3);
+}
+.item-card.locked { opacity: 0.4; filter: grayscale(1); }
+.item-emoji { font-size: 36px; }
+.item-name { font-size: 12px; margin-top: 4px; }
+
+.princess-set {
+  background: linear-gradient(135deg, #FFE4E1, #FFB6C1);
+  border: 3px solid #FF69B4; border-radius: 20px;
+  padding: 20px; text-align: center; margin: 15px 0;
+}
+.princess-set.unlocked { box-shadow: 0 0 30px rgba(255,105,180,0.5); }
+
+/* ===== Bank ===== */
+.bank-card {
+  background: linear-gradient(135deg, #f0f8e8, #e8f5e8);
+  border: 3px solid #5a9e3e; border-radius: 20px;
+  padding: 20px; margin: 15px 0; text-align: center;
+}
+.bank-card h3 { color: #2d6a1e; font-size: 22px; }
+.interest-table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  background: white; border-radius: 12px; overflow: hidden;
+}
+.interest-table th, .interest-table td {
+  padding: 10px; text-align: center; border-bottom: 1px solid #e8f5e8;
+}
+.interest-table th { background: #5a9e3e; color: white; }
+.interest-table tr:hover { background: #f0f8e0; }
+
+/* ===== Passbook ===== */
+.passbook {
+  background: linear-gradient(135deg, #5a7e5a, #3d6a3d);
+  border-radius: 20px; padding: 3px; margin: 15px 0;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+.passbook-inner {
+  background: #f5f0e0; border-radius: 18px; padding: 20px;
+  min-height: 300px;
+}
+.passbook-title {
+  text-align: center; font-size: 22px; color: #3d6a3d;
+  border-bottom: 2px solid #3d6a3d; padding-bottom: 10px; margin-bottom: 15px;
+}
+.passbook-entry {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px dashed #ccc; font-size: 14px;
+}
+.passbook-entry .date { color: #666; }
+.passbook-entry .desc { flex: 1; margin: 0 10px; }
+.passbook-entry .amount { font-weight: bold; }
+.passbook-entry .amount.positive { color: #2d6a1e; }
+.passbook-entry .amount.negative { color: #c0392b; }
+
+.balance-chart {
+  width: 100%; height: 150px; margin: 15px 0;
+  background: white; border-radius: 12px; padding: 10px;
+  border: 1px solid #ddd;
+}
+.chart-canvas { width: 100%; height: 100%; }
+
+/* ===== Shop ===== */
+.shop-items {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px; margin: 15px 0;
+}
+.shop-item {
+  background: white; border: 2px solid #f0e0c0; border-radius: 15px;
+  padding: 15px; text-align: center; transition: all 0.3s;
+}
+.shop-item:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.shop-item-emoji { font-size: 40px; }
+.shop-item-name { font-size: 16px; margin: 8px 0; }
+.shop-item-price { color: var(--gold-dark); font-size: 18px; }
+.shop-item .btn { margin-top: 8px; padding: 6px 16px; font-size: 14px; }
+
+/* ===== Sparkles ===== */
+.sparkle {
+  position: absolute; width: 6px; height: 6px;
+  background: var(--gold); border-radius: 50%;
+  animation: sparkle 1.5s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0); opacity: 1; }
+  50% { transform: scale(1) rotate(180deg); opacity: 0.8; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.5); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: all 0.3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--cream); border: 4px solid var(--wood);
+  border-radius: 25px; padding: 30px; max-width: 400px; width: 90%;
+  text-align: center; transform: scale(0.8); transition: transform 0.3s;
+}
+.modal-overlay.show .modal { transform: scale(1); }
+.modal h2 { color: var(--accent); margin-bottom: 15px; }
+
+/* ===== Flowers / Nature Decorations ===== */
+.nature-decor {
+  position: fixed; pointer-events: none; z-index: 0;
+  font-size: 30px; opacity: 0.5;
+}
+.flower-1 { bottom: 10%; left: 5%; animation: sway 4s ease infinite; }
+.flower-2 { bottom: 8%; right: 8%; animation: sway 5s ease infinite 1s; }
+.flower-3 { bottom: 12%; left: 15%; animation: sway 3.5s ease infinite 0.5s; }
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+  background: rgba(255,255,255,0.95); border: 2px solid var(--gold);
+  border-radius: 15px; padding: 12px 24px; font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 18px; z-index: 300; transition: transform 0.5s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== Confetti ===== */
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px;
+  z-index: 150; pointer-events: none;
+  animation: confettiFall 3s linear forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===== Pet Home ===== */
+.pet-display {
+  position: relative; display: inline-block; margin: 15px 0;
+}
+.pet-name-tag {
+  background: linear-gradient(135deg, #FF69B4, #FF1493);
+  color: white; padding: 4px 16px; border-radius: 12px;
+  font-size: 16px; margin-bottom: 8px; display: inline-block;
+  box-shadow: 0 2px 8px rgba(255,105,180,0.3);
+}
+.pet-body {
+  font-size: 80px; display: block; margin: 10px auto;
+  transition: transform 0.5s;
+}
+.pet-body.happy { animation: petHappy 0.6s ease; }
+@keyframes petHappy {
+  0%,100% { transform: scale(1) rotate(0); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  50% { transform: scale(1.15) rotate(5deg); }
+  75% { transform: scale(1.05) rotate(-3deg); }
+}
+.pet-owner {
+  font-size: 13px; color: var(--brown); margin-top: 4px;
+  background: #f5f0e0; padding: 3px 12px; border-radius: 10px;
+  display: inline-block;
+}
+.pet-growth-bar {
+  width: 200px; margin: 12px auto; text-align: center;
+}
+.pet-growth-bar .label { font-size: 13px; color: #888; margin-bottom: 4px; }
+.pet-growth-bg {
+  height: 16px; background: #e8e0d0; border-radius: 8px;
+  border: 2px solid var(--wood-dark); overflow: hidden;
+}
+.pet-growth-fill {
+  height: 100%; border-radius: 6px;
+  background: linear-gradient(90deg, #98FB98, #32CD32);
+  transition: width 0.5s;
+}
+.pet-days-info { font-size: 14px; color: #666; margin-top: 8px; }
+.pet-shop-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
+  gap: 10px; margin: 15px 0;
+}
+.pet-shop-item {
+  background: white; border: 2px solid #f0e0c0; border-radius: 12px;
+  padding: 10px; text-align: center; cursor: pointer; transition: all 0.3s;
+}
+.pet-shop-item:hover { border-color: var(--gold); transform: translateY(-2px); }
+.pet-shop-item.current { border-color: #FF69B4; background: #FFF0F5; box-shadow: 0 2px 10px rgba(255,105,180,0.2); }
+.pet-shop-item .pet-emoji { font-size: 32px; }
+.pet-shop-item .pet-type { font-size: 11px; color: #888; margin-top: 2px; }
+.pet-name-input {
+  padding: 8px 16px; font-size: 18px; font-family: 'ZCOOL KuaiLe', cursive;
+  border: 2px solid var(--wood); border-radius: 12px;
+  text-align: center; width: 160px; outline: none;
+}
+.pet-name-input:focus { border-color: #FF69B4; }
+.pet-reward-banner {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border: 2px solid var(--wood); border-radius: 12px;
+  padding: 10px 20px; margin: 10px 0; text-align: center;
+  font-size: 16px; color: var(--brown);
+}
+.pet-hearts { font-size: 18px; margin: 6px 0; }
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .top-bar { flex-direction: column; text-align: center; }
+  .tab-btn { padding: 8px 14px; font-size: 14px; }
+  .checkin-card { padding: 15px; }
+  .task-item { flex-direction: column; gap: 8px; }
+  .shop-items { grid-template-columns: repeat(2, 1fr); }
+  .shop-building { transform: scale(0.8); margin: -20px auto; }
+  .guide-girl-container { right: 5px !important; bottom: 60px !important; }
+}
+
+/* ===== Progress Bar ===== */
+.progress-bar-bg {
+  width: 100%; height: 20px; background: #e8e0d0; border-radius: 10px;
+  overflow: hidden; margin: 8px 0; border: 2px solid var(--wood-dark);
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 8px; transition: width 0.5s;
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+}
+
+/* ===== Animations ===== */
+.fade-in { animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.pulse { animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+.shake { animation: shake 0.5s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Item collection animation */
+.item-appear { animation: itemAppear 1s ease; }
+@keyframes itemAppear {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  60% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Day stamp */
+.day-stamps {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: center;
+}
+.day-stamp {
+  width: 40px; height: 40px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 12px;
+  border: 2px solid #ddd; background: #f5f5f5;
+}
+.day-stamp.checked {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-color: var(--gold-dark); color: white;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.4);
+}
+.day-stamp.today {
+  border-color: var(--accent); border-width: 3px;
+}
+
+/* ======================================================
+   CARTOON GIRL GUIDE — 宫崎骏风格卡通小女孩助手
+   ====================================================== */
+.guide-girl-container {
+  position: fixed; bottom: 70px; right: 15px; z-index: 50;
+  cursor: pointer; transition: transform 0.3s;
+}
+.guide-girl-container:hover { transform: scale(1.08); }
+
+/* CSS drawn girl character */
+.girl-character {
+  position: relative; width: 70px; height: 110px;
+}
+
+/* Hair */
+.girl-hair {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 52px; height: 35px;
+  background: #4a2800;
+  border-radius: 26px 26px 5px 5px;
+  z-index: 3;
+}
+.girl-hair::before {
+  content: ''; position: absolute; top: 8px; left: -8px;
+  width: 18px; height: 40px; background: #4a2800;
+  border-radius: 50% 0 0 50%;
+}
+.girl-hair::after {
+  content: ''; position: absolute; top: 8px; right: -8px;
+  width: 18px; height: 40px; background: #4a2800;
+  border-radius: 0 50% 50% 0;
+}
+
+/* Face */
+.girl-face {
+  position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 38px;
+  background: #ffe0bd;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+/* Eyes */
+.girl-face::before {
+  content: ''; position: absolute; top: 12px; left: 8px;
+  width: 7px; height: 9px; background: #3a2000;
+  border-radius: 50%;
+  box-shadow: 12px 0 0 #3a2000;
+}
+
+/* Mouth — smile */
+.girl-face::after {
+  content: ''; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 10px; height: 5px;
+  border-bottom: 2px solid #d4735a;
+  border-radius: 0 0 50% 50%;
+}
+
+/* Blush */
+.girl-blush-l, .girl-blush-r {
+  position: absolute; top: 28px; width: 8px; height: 5px;
+  background: rgba(255,150,150,0.5); border-radius: 50%; z-index: 3;
+}
+.girl-blush-l { left: 10px; }
+.girl-blush-r { right: 10px; }
+
+/* Hair bow */
+.girl-bow {
+  position: absolute; top: 2px; right: 5px; z-index: 4;
+  width: 14px; height: 10px;
+}
+.girl-bow::before, .girl-bow::after {
+  content: ''; position: absolute; top: 2px;
+  width: 8px; height: 8px; background: #FF69B4;
+  border-radius: 50% 50% 0 50%;
+}
+.girl-bow::before { left: 0; transform: rotate(-20deg); }
+.girl-bow::after { right: 0; transform: rotate(20deg) scaleX(-1); }
+
+/* Body / Dress */
+.girl-dress {
+  position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 35px;
+  background: linear-gradient(180deg, #FF69B4, #FF1493);
+  border-radius: 8px 8px 20px 20px;
+  z-index: 1;
+}
+.girl-dress::before {
+  content: ''; position: absolute; top: 0; left: -6px; right: -6px; height: 8px;
+  background: #fff; border-radius: 0 0 4px 4px;
+}
+/* Collar */
+.girl-dress::after {
+  content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px; background: var(--gold);
+  border-radius: 50%;
+}
+
+/* Arms */
+.girl-arm-l, .girl-arm-r {
+  position: absolute; top: 52px; width: 8px; height: 22px;
+  background: #ffe0bd; border-radius: 4px; z-index: 0;
+}
+.girl-arm-l { left: 7px; transform: rotate(15deg); }
+.girl-arm-r { right: 7px; transform: rotate(-15deg); }
+
+/* Waving hand animation */
+.girl-arm-r.waving {
+  transform-origin: top center;
+  animation: wave 1.5s ease infinite;
+}
+@keyframes wave {
+  0%, 100% { transform: rotate(-15deg); }
+  25% { transform: rotate(-40deg); }
+  75% { transform: rotate(0deg); }
+}
+
+/* Legs */
+.girl-leg-l, .girl-leg-r {
+  position: absolute; top: 82px; width: 8px; height: 18px;
+  background: #ffe0bd; border-radius: 4px; z-index: 0;
+}
+.girl-leg-l { left: 20px; }
+.girl-leg-r { right: 20px; }
+
+/* Shoes */
+.girl-shoe-l, .girl-shoe-r {
+  position: absolute; top: 97px; width: 12px; height: 6px;
+  background: #8B4513; border-radius: 6px 6px 3px 3px; z-index: 0;
+}
+.girl-shoe-l { left: 18px; }
+.girl-shoe-r { right: 18px; }
+
+/* ===== Speech Bubble ===== */
+.girl-speech-bubble {
+  position: absolute; bottom: 125px; right: -10px;
+  background: white; border: 3px solid var(--wood);
+  border-radius: 18px; padding: 12px 16px;
+  min-width: 200px; max-width: 260px;
+  font-size: 14px; line-height: 1.6; color: #4a3520;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  opacity: 0; transform: translateY(10px) scale(0.9);
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+.girl-speech-bubble.show {
+  opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+.girl-speech-bubble::after {
+  content: ''; position: absolute; bottom: -12px; right: 25px;
+  width: 0; height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 14px solid var(--wood);
+}
+.girl-speech-bubble::before {
+  content: ''; position: absolute; bottom: -8px; right: 27px;
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid white;
+  z-index: 1;
+}
+.speech-title {
+  font-size: 16px; color: var(--accent); margin-bottom: 6px;
+  border-bottom: 1px dashed #f0e0c0; padding-bottom: 4px;
+}
+.speech-close {
+  position: absolute; top: 4px; right: 8px;
+  font-size: 18px; cursor: pointer; color: #999;
+  line-height: 1;
+}
+.speech-close:hover { color: var(--accent); }
+
+/* Girl float animation */
+.guide-girl-container {
+  animation: girlFloat 3s ease infinite;
+}
+@keyframes girlFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.guide-girl-container:hover { animation-play-state: paused; }
+
+/* ===== Pet Guide Avatar ===== */
+.pet-guide-avatar {
+  display: flex; flex-direction: column; align-items: center;
+  animation: petBounce 2s ease infinite;
+}
+@keyframes petBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.pet-guide-name {
+  font-size: 12px; color: white; background: #FF69B4;
+  padding: 2px 10px; border-radius: 8px; margin-bottom: 4px;
+  white-space: nowrap;
+}
+.pet-guide-emoji {
+  font-size: 52px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.pet-guide-owner {
+  font-size: 9px; color: #8B6914; background: rgba(255,248,220,0.9);
+  padding: 1px 8px; border-radius: 6px; margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* ===== Butterflies (decorative) ===== */
+.butterfly {
+  position: fixed; pointer-events: none; z-index: 0; font-size: 20px;
+  animation: butterflyFly 8s ease-in-out infinite;
+}
+@keyframes butterflyFly {
+  0% { transform: translate(0,0) rotate(0deg); }
+  25% { transform: translate(30px,-20px) rotate(10deg); }
+  50% { transform: translate(-10px,-40px) rotate(-5deg); }
+  75% { transform: translate(20px,-10px) rotate(8deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+
+/* ===== Fireflies (evening decor) ===== */
+.firefly {
+  position: fixed; pointer-events: none; z-index: 0;
+  width: 4px; height: 4px; background: #FFD700;
+  border-radius: 50%; box-shadow: 0 0 6px 2px rgba(255,215,0,0.6);
+  animation: fireflyGlow 4s ease infinite;
+}
+@keyframes fireflyGlow {
+  0%, 100% { opacity: 0.2; transform: translate(0,0); }
+  50% { opacity: 1; transform: translate(10px,-15px); }
+}
+
+/* ===== Music Control ===== */
+.music-control {
+  position: fixed; top: 15px; right: 15px; z-index: 60;
+  display: flex; align-items: center; gap: 6px;
+}
+.music-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 2px solid var(--wood); cursor: pointer;
+  background: linear-gradient(135deg, #FFF8DC, #FFE4B5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: all 0.3s; user-select: none;
+}
+.music-btn:hover { transform: scale(1.1); }
+.music-btn.playing {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  animation: musicPulse 2s ease infinite;
+}
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(255,215,0,0.3); }
+  50% { box-shadow: 0 2px 20px rgba(255,215,0,0.7); }
+}
+.music-notes {
+  position: fixed; top: 15px; right: 62px; z-index: 59;
+  pointer-events: none; font-size: 16px;
+}
+.music-note {
+  position: absolute; opacity: 0;
+  animation: noteFloat 3s ease forwards;
+}
+@keyframes noteFloat {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+  100% { transform: translateY(-60px) rotate(20deg) translateX(-20px); opacity: 0; }
+}
+
+/* ===== Hanging Ceremony Shop Preview ===== */
+.shop-preview-mini {
+  width: 200px; height: 160px; position: relative; margin: 10px auto;
+}
+.shop-preview-mini .mini-roof {
+  position: absolute; top: 0; left: -10px; right: -10px; height: 40px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+.shop-preview-mini .mini-body {
+  position: absolute; top: 35px; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, #FFE4B5, #FFDAB9);
+  border: 2px solid var(--wood); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+.shop-preview-mini .mini-awning {
+  position: absolute; top: 35px; left: -5px; right: -5px; height: 18px;
+  background: repeating-linear-gradient(90deg, #FF69B4 0, #FF69B4 12px, #fff 12px, #fff 24px);
+  border-radius: 0 0 30% 30%;
+}
+</style>
+</head>
+<body>
+
+<!-- Background Decorations -->
+<div class="clouds">
+  <div class="cloud"></div>
+  <div class="cloud"></div>
+  <div class="cloud"></div>
+  <div class="cloud"></div>
+</div>
+<div class="nature-decor flower-1">🌸</div>
+<div class="nature-decor flower-2">🌻</div>
+<div class="nature-decor flower-3">🌿</div>
+<div class="butterfly" style="top:20%; left:10%;">🦋</div>
+<div class="butterfly" style="top:35%; right:15%; animation-delay:-3s;">🦋</div>
+<div class="firefly" style="top:25%; left:30%;"></div>
+<div class="firefly" style="top:45%; right:20%; animation-delay:-2s;"></div>
+<div class="firefly" style="top:60%; left:60%; animation-delay:-1s;"></div>
+
+<!-- ===== Music Control ===== -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="背景音乐">🎵</button>
+</div>
+<div class="music-notes" id="musicNotes"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Coin Rain Container -->
+<div class="coin-rain-overlay" id="coinRain"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- ===== Pet Guide (replaces girl guide after adoption) ===== -->
+<div class="guide-girl-container" id="guideGirl" onclick="toggleGirlSpeech()" style="display:none;">
+  <div class="girl-speech-bubble" id="speechBubble">
+    <span class="speech-close" onclick="event.stopPropagation(); hideGirlSpeech();">×</span>
+    <div class="speech-title" id="speechTitle">👋 你好呀！</div>
+    <div id="speechContent">我是小梅，你的商城小助手！点击我可以了解玩法哦～</div>
+  </div>
+  <!-- Default: girl character (before pet adoption) -->
+  <div class="girl-character" id="guideDefault">
+    <div class="girl-hair"></div>
+    <div class="girl-bow"></div>
+    <div class="girl-face"></div>
+    <div class="girl-blush-l"></div>
+    <div class="girl-blush-r"></div>
+    <div class="girl-arm-l"></div>
+    <div class="girl-arm-r waving"></div>
+    <div class="girl-dress"></div>
+    <div class="girl-leg-l"></div>
+    <div class="girl-leg-r"></div>
+    <div class="girl-shoe-l"></div>
+    <div class="girl-shoe-r"></div>
+  </div>
+  <!-- After pet adoption: show the pet instead -->
+  <div class="pet-guide-avatar" id="guidePetAvatar" style="display:none;">
+    <div class="pet-guide-name" id="guidePetName"></div>
+    <div class="pet-guide-emoji" id="guidePetEmoji"></div>
+    <div class="pet-guide-owner">郑秀妍的宝贝</div>
+  </div>
+</div>
+
+<!-- ===== Screen 1: Opening Ceremony ===== -->
+<div class="screen active" id="opening-ceremony">
+  <h1 style="font-size:36px; color:var(--accent); text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+    ✨ 家庭积分商城 ✨
+  </h1>
+  <p style="font-size:18px; margin:10px 0; color:var(--brown);">全家协力，一起装修我们的小商店！</p>
+
+  <div class="family-characters">
+    <span>👨‍🔧</span><span>👩‍🎨</span><span>👧</span>
+  </div>
+
+  <div class="shop-building" id="shopBuilding">
+    <!-- Chimney -->
+    <div class="shop-chimney" id="shopChimney"></div>
+    <div class="shop-smoke" id="shopSmoke">💨</div>
+    <!-- Flag -->
+    <div class="shop-flag" id="shopFlag">🎏</div>
+    <!-- Roof -->
+    <div class="shop-roof-main" id="shopRoof"></div>
+    <!-- Sign Board -->
+    <div class="shop-sign-board" id="shopSignBoard">
+      <div class="sign-rope"></div>
+      <div class="sign-board">✨ 家庭积分商城 ✨</div>
+    </div>
+    <!-- Main Body -->
+    <div class="shop-body" id="shopBody">
+      <!-- Awning -->
+      <div class="shop-awning" id="shopAwning"></div>
+      <!-- Display Windows -->
+      <div class="shop-windows" id="shopWindows">
+        <div class="shop-window-item">
+          <span class="window-emoji">📖</span>
+          <span class="window-label">阅读</span>
+        </div>
+        <div class="shop-window-item">
+          <span class="window-emoji">✏️</span>
+          <span class="window-label">复习</span>
+        </div>
+        <div class="shop-window-item">
+          <span class="window-emoji">🏃</span>
+          <span class="window-label">运动</span>
+        </div>
+        <div class="shop-window-item">
+          <span class="window-emoji">✍️</span>
+          <span class="window-label">练字</span>
+        </div>
+      </div>
+      <!-- Shelf -->
+      <div class="shop-shelf" id="shopShelf">
+        <span class="shelf-item">🎀</span>
+        <span class="shelf-item">👑</span>
+        <span class="shelf-item">💎</span>
+        <span class="shelf-item">🧸</span>
+        <span class="shelf-item">🪄</span>
+      </div>
+    </div>
+    <!-- Door -->
+    <div class="shop-door-main" id="shopDoor"></div>
+    <!-- Flower boxes -->
+    <div class="shop-flower-box left" id="shopFlowerL">🌸🌿</div>
+    <div class="shop-flower-box right" id="shopFlowerR">🌷🌱</div>
+    <!-- Ground -->
+    <div class="shop-ground"></div>
+    <!-- Extra decorations -->
+    <div class="decoration-item" id="dec1" style="top:-30px; left:-20px;">🐦</div>
+    <div class="decoration-item" id="dec2" style="top:-40px; right:-15px;">🌟</div>
+    <div class="decoration-item" id="dec3" style="bottom:0; left:-25px;">🪴</div>
+    <div class="decoration-item" id="dec4" style="bottom:0; right:-25px;">🌺</div>
+  </div>
+
+  <button class="btn" id="decorateBtn" onclick="startDecoration()">🔨 开始装修</button>
+</div>
+
+<!-- ===== Screen 2: Hanging Sign ===== -->
+<div class="screen" id="hanging-ceremony">
+  <h1 style="font-size:28px; color:var(--accent);">🏪 挂牌仪式 🏪</h1>
+  <p style="font-size:18px; margin:15px 0; color:var(--brown);">点击挂牌，商城正式开张！</p>
+
+  <div class="shop-preview-mini">
+    <div class="mini-roof"></div>
+    <div class="mini-awning"></div>
+    <div class="mini-body">🏪</div>
+  </div>
+
+  <div class="rope"></div>
+  <div class="hanging-sign" id="hangingSign" onclick="hangSign()">
+    家庭积分商城
+  </div>
+
+  <div id="diceSection" style="display:none; margin-top:20px;">
+    <h2 style="font-size:24px; color:var(--gold-dark);">🎲 掷骰子赢初始资金！</h2>
+    <p style="font-size:16px; margin:8px 0;">点数 × 10 = 初始金币</p>
+    <div class="dice-container">
+      <div class="dice" id="dice" onclick="rollDice()">
+        <div class="dice-face" id="diceFace">
+          <span style="font-size:48px;">🎲</span>
+        </div>
+      </div>
+    </div>
+    <div class="dice-result" id="diceResult" style="display:none;"></div>
+    <button class="btn" id="enterShopBtn" style="display:none;" onclick="enterMainApp()">🎉 进入商城</button>
+  </div>
+</div>
+
+<!-- ===== Screen 3: Rules ===== -->
+<div class="screen" id="rules-screen">
+  <h1 style="font-size:28px; color:var(--accent);">📜 商城规则 📜</h1>
+
+  <div class="rules-card fade-in">
+    <h3>🌱 成长型思维打卡</h3>
+    <div class="rule-item"><span class="rule-icon">🌟</span> 发现自己的进步 — 7 金币</div>
+    <div class="rule-item"><span class="rule-icon">💪</span> 坚持练习（10分钟）— 5 金币</div>
+    <div class="rule-item"><span class="rule-icon">📖</span> 坚持练习（不足10分钟）— 3 金币</div>
+  </div>
+
+  <div class="rules-card fade-in" style="animation-delay:0.2s;">
+    <h3>🎁 每日全勤奖励</h3>
+    <div class="rule-item"><span class="rule-icon">🎊</span> 完成所有打卡 → 金币雨降临！</div>
+    <div class="rule-item"><span class="rule-icon">🎀</span> 额外获得一件虚拟装饰品</div>
+    <div class="rule-item"><span class="rule-icon">👸</span> 连续30天全勤 → 公主套装！</div>
+  </div>
+
+  <div class="rules-card fade-in" style="animation-delay:0.4s;">
+    <h3>🏦 家庭银行利息</h3>
+    <div class="rule-item"><span class="rule-icon">💰</span> 累计 500 → 奖励 50 金币</div>
+    <div class="rule-item"><span class="rule-icon">💎</span> 累计 1000 → 奖励 120 金币</div>
+    <div class="rule-item"><span class="rule-icon">👑</span> 累计 1500 → 奖励 200 金币</div>
+    <div class="rule-item"><span class="rule-icon">🏆</span> 累计 2000 → 奖励 300 金币</div>
+  </div>
+
+  <div class="rules-card fade-in" style="animation-delay:0.6s;">
+    <h3>🛍️ 实物兑换</h3>
+    <div class="rule-item"><span class="rule-icon">💱</span> 1 金币 = 1 角钱</div>
+    <div class="rule-item"><span class="rule-icon">🛒</span> 可在商城兑换实物</div>
+  </div>
+
+  <button class="btn pink" onclick="showScreen('main-app')" style="margin-top:15px;">🌸 我知道了，开始吧！</button>
+</div>
+
+<!-- ===== Screen 4: Main App ===== -->
+<div class="screen" id="main-app">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="coin-display">
+      <div class="coin-icon">¥</div>
+      <span id="coinAmount">0</span> 金币
+    </div>
+    <div class="level-badge" id="levelBadge">🌟 小学徒</div>
+    <div class="day-counter">📅 第 <span id="dayCount">1</span> 天 <button onclick="resetGame()" style="font-size:12px;padding:2px 8px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;margin-left:8px;">🔄重置</button></div>
+  </div>
+
+  <!-- Progress to next level -->
+  <div style="background:var(--cream); border:2px solid var(--wood); border-radius:12px; padding:10px 15px; margin-bottom:12px;">
+    <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;">
+      <span id="levelCurrent">当前: 小学徒</span>
+      <span id="levelNext">下一级: 小掌柜 (500)</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="levelProgress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('checkin')">📋 每日打卡</button>
+    <button class="tab-btn" onclick="switchTab('pet')">🐰 宠物家园</button>
+    <button class="tab-btn" onclick="switchTab('collection')">🎁 收藏柜</button>
+    <button class="tab-btn" onclick="switchTab('bank')">🏦 家庭银行</button>
+    <button class="tab-btn" onclick="switchTab('shop')">🛍️ 兑换商店</button>
+  </div>
+
+  <!-- ===== Tab: Check-in ===== -->
+  <div class="tab-content active" id="tab-checkin">
+    <div class="checkin-card">
+      <h3>📚 今日打卡 <span style="font-size:14px; color:#888;" id="todayDate"></span></h3>
+
+      <div class="task-item" id="task-reading">
+        <div class="task-info">
+          <span class="task-emoji">📖</span>
+          <span class="task-name">课外阅读</span>
+        </div>
+        <div class="rating-btns">
+          <button class="rating-btn excellent" onclick="rate('reading','excellent')">🌟进步7</button>
+          <button class="rating-btn good" onclick="rate('reading','good')">💪坚持10min5</button>
+          <button class="rating-btn average" onclick="rate('reading','average')">📖不足10min3</button>
+          <button class="rating-btn cancel" onclick="cancelRate('reading')">✕</button>
+        </div>
+      </div>
+
+      <div class="task-item" id="task-review">
+        <div class="task-info">
+          <span class="task-emoji">✏️</span>
+          <span class="task-name">错题复习</span>
+        </div>
+        <div class="rating-btns">
+          <button class="rating-btn excellent" onclick="rate('review','excellent')">🌟进步7</button>
+          <button class="rating-btn good" onclick="rate('review','good')">💪坚持10min5</button>
+          <button class="rating-btn average" onclick="rate('review','average')">📖不足10min3</button>
+          <button class="rating-btn cancel" onclick="cancelRate('review')">✕</button>
+        </div>
+      </div>
+
+      <div class="task-item" id="task-sports">
+        <div class="task-info">
+          <span class="task-emoji">🏃</span>
+          <span class="task-name">体育锻炼</span>
+        </div>
+        <div class="rating-btns">
+          <button class="rating-btn excellent" onclick="rate('sports','excellent')">🌟进步7</button>
+          <button class="rating-btn good" onclick="rate('sports','good')">💪坚持10min5</button>
+          <button class="rating-btn average" onclick="rate('sports','average')">📖不足10min3</button>
+          <button class="rating-btn cancel" onclick="cancelRate('sports')">✕</button>
+        </div>
+      </div>
+
+      <div class="task-item" id="task-calligraphy">
+        <div class="task-info">
+          <span class="task-emoji">✍️</span>
+          <span class="task-name">练字</span>
+        </div>
+        <div class="rating-btns">
+          <button class="rating-btn excellent" onclick="rate('calligraphy','excellent')">🌟进步7</button>
+          <button class="rating-btn good" onclick="rate('calligraphy','good')">💪坚持10min5</button>
+          <button class="rating-btn average" onclick="rate('calligraphy','average')">📖不足10min3</button>
+          <button class="rating-btn cancel" onclick="cancelRate('calligraphy')">✕</button>
+        </div>
+      </div>
+
+      <button class="btn green complete-day-btn" id="completeDayBtn" onclick="completeDay()">
+        ✨ 完成今日打卡 ✨
+      </button>
+    </div>
+
+    <!-- Day Stamps -->
+    <div class="checkin-card">
+      <h3>📅 30天打卡记录</h3>
+      <div class="day-stamps" id="dayStamps"></div>
+      <p style="text-align:center; font-size:14px; color:#888; margin-top:8px;">
+        连续全勤 <span id="perfectDays" style="color:var(--accent); font-weight:bold;">0</span>/30 天 → 👸 公主套装
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== Tab: Pet Home ===== -->
+  <div class="tab-content" id="tab-pet">
+    <div class="checkin-card" style="text-align:center;">
+      <h3>🐰 宠物家园 🏡</h3>
+      <div id="petArea"></div>
+    </div>
+  </div>
+
+  <!-- ===== Tab: Collection ===== -->
+  <div class="tab-content" id="tab-collection">
+    <div class="checkin-card">
+      <h3>🎀 虚拟物品收藏</h3>
+      <div class="items-grid" id="itemsGrid"></div>
+    </div>
+
+    <div class="princess-set" id="princessSet">
+      <h3>👸 公主套装 👸</h3>
+      <p>连续全勤30天解锁</p>
+      <div style="font-size:60px; margin:10px 0;" id="princessEmoji">🔒</div>
+      <p id="princessStatus">尚未解锁</p>
+    </div>
+  </div>
+
+  <!-- ===== Tab: Bank ===== -->
+  <div class="tab-content" id="tab-bank">
+    <div class="bank-card">
+      <h3>🏦 家庭银行</h3>
+      <p style="font-size:20px; margin:10px 0;">存款余额：<strong id="bankBalance" style="color:#2d6a1e;">0</strong> 金币</p>
+      <p style="font-size:14px; color:#666;">钱包余额：<span id="walletBalance">0</span> 金币</p>
+
+      <div style="display:flex; gap:10px; margin:15px 0; justify-content:center;">
+        <button class="btn green" onclick="depositToBank()" style="padding:10px 20px; font-size:16px;">💾 存入银行</button>
+        <button class="btn pink" onclick="withdrawFromBank()" style="padding:10px 20px; font-size:16px;">💸 取出金币</button>
+      </div>
+
+      <table class="interest-table">
+        <tr><th>累计存款</th><th>利息奖励</th><th>状态</th></tr>
+        <tr><td>500</td><td>+50</td><td id="int500">🔒</td></tr>
+        <tr><td>1000</td><td>+120</td><td id="int1000">🔒</td></tr>
+        <tr><td>1500</td><td>+200</td><td id="int1500">🔒</td></tr>
+        <tr><td>2000</td><td>+300</td><td id="int2000">🔒</td></tr>
+      </table>
+    </div>
+
+    <!-- Passbook -->
+    <div class="passbook">
+      <div class="passbook-inner">
+        <div class="passbook-title">📒 家庭银行存折</div>
+        <div id="passbookEntries">
+          <p style="text-align:center; color:#999; font-size:14px;">暂无记录</p>
+        </div>
+        <div class="balance-chart">
+          <canvas id="balanceChart" class="chart-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Tab: Shop ===== -->
+  <div class="tab-content" id="tab-shop">
+    <div class="checkin-card">
+      <h3>🛍️ 实物兑换商店</h3>
+      <p style="font-size:14px; color:#888; margin-bottom:12px;">1 金币 = 1 角钱，可兑换以下商品</p>
+      <div class="shop-items" id="shopItems"></div>
+    </div>
+
+    <div class="checkin-card">
+      <h3>📋 兑换记录</h3>
+      <div id="exchangeHistory">
+        <p style="text-align:center; color:#999; font-size:14px;">暂无兑换记录</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Game State =====
+let gameState = {
+  initialized: false,
+  coins: 0,
+  bankBalance: 0,
+  totalEarned: 0,
+  totalBanked: 0,
+  interestClaimed: { 500: false, 1000: false, 1500: false, 2000: false },
+  day: 1,
+  startDate: null,
+  todayRatings: { reading: null, review: null, sports: null, calligraphy: null },
+  checkedDays: [],
+  perfectDays: 0,
+  collectedItems: [],
+  princessUnlocked: false,
+  passbookEntries: [],
+  exchangeHistory: [],
+  balanceHistory: [0],
+  pet: {
+    currentPetId: null,    // which pet is adopted
+    petName: '',           // custom name
+    adoptDate: null,       // ISO date string
+    growthDays: 0,         // how many days fed
+    rewardClaimed: false   // whether 30-day reward claimed
+  }
+};
+
+// Virtual items pool
+const virtualItems = [
+  { emoji: '🎀', name: '蝴蝶结' }, { emoji: '🌺', name: '花发夹' },
+  { emoji: '👑', name: '小皇冠' }, { emoji: '💎', name: '宝石戒' },
+  { emoji: '🦋', name: '蝴蝶针' }, { emoji: '🌟', name: '星星坠' },
+  { emoji: '💐', name: '小花束' }, { emoji: '🪞', name: '小镜子' },
+  { emoji: '🧣', name: '丝围巾' }, { emoji: '💍', name: '小手环' },
+  { emoji: '🪷', name: '莲花灯' }, { emoji: '🎪', name: '魔法杖' },
+  { emoji: '🦄', name: '独角兽' }, { emoji: '🌈', name: '彩虹带' },
+  { emoji: '🔔', name: '铃铛链' }, { emoji: '🧸', name: '小熊挂' },
+  { emoji: '🎭', name: '面具舞' }, { emoji: '🌙', name: '月亮石' },
+  { emoji: '🎄', name: '圣诞树' }, { emoji: '🏰', name: '小城堡' },
+  { emoji: '🎵', name: '八音盒' }, { emoji: '🪄', name: '仙女棒' },
+  { emoji: '🦊', name: '狐狸友' }, { emoji: '🐾', name: '猫爪印' },
+  { emoji: '🫧', name: '泡泡瓶' }, { emoji: '🪶', name: '羽毛笔' },
+  { emoji: '🍀', name: '四叶草' }, { emoji: '🗝️', name: '金钥匙' },
+  { emoji: '🧲', name: '磁力石' }, { emoji: '👸', name: '公主装' }
+];
+
+// Shop items
+const shopItemsData = [
+  { emoji: '🍫', name: '巧克力', price: 10 },
+  { emoji: '🍦', name: '冰淇淋', price: 15 },
+  { emoji: '🧸', name: '小毛绒玩具', price: 30 },
+  { emoji: '📖', name: '故事书', price: 50 },
+  { emoji: '🎨', name: '画笔套装', price: 80 },
+  { emoji: '🚲', name: '骑行出游', price: 100 },
+  { emoji: '🎬', name: '看一场电影', price: 60 },
+  { emoji: '🎪', name: '游乐园', price: 200 },
+  { emoji: '🍕', name: '披萨大餐', price: 50 },
+  { emoji: '🎭', name: '手工DIY', price: 40 },
+  { emoji: '🎪', name: '动物园', price: 150 },
+  { emoji: '🎁', name: '神秘礼物', price: 300 },
+];
+
+// Levels
+const levels = [
+  { name: '小学徒', min: 0, icon: '🌟' },
+  { name: '小掌柜', min: 500, icon: '⭐' },
+  { name: '大掌柜', min: 1000, icon: '💎' },
+  { name: '小东家', min: 1500, icon: '👑' },
+  { name: '大东家', min: 2000, icon: '🏆' },
+];
+
+// Pets catalog (monthly rotation)
+const petCatalog = [
+  { id: 'bunny', emoji: '🐰', name: '长耳兔', desc: '软萌长耳兔宝宝' },
+  { id: 'kitten', emoji: '🐱', name: '小猫咪', desc: '爱撒娇的小猫咪' },
+  { id: 'puppy', emoji: '🐶', name: '小奶狗', desc: '忠诚的小奶狗' },
+  { id: 'hamster', emoji: '🐹', name: '小仓鼠', desc: '圆滚滚小仓鼠' },
+  { id: 'chick', emoji: '🐤', name: '小黄鸡', desc: '叽叽喳喳小黄鸡' },
+  { id: 'panda', emoji: '🐼', name: '小熊猫', desc: '憨态可掬小熊猫' },
+  { id: 'fox', emoji: '🦊', name: '小狐狸', desc: '聪明伶俐小狐狸' },
+  { id: 'penguin', emoji: '🐧', name: '小企鹅', desc: '摇摇摆摆小企鹅' },
+  { id: 'deer', emoji: '🦌', name: '小鹿', desc: '温柔灵动小鹿' },
+  { id: 'owl', emoji: '🦉', name: '小猫头鹰', desc: '智慧小猫头鹰' },
+  { id: 'dolphin', emoji: '🐬', name: '小海豚', desc: '活泼小海豚' },
+  { id: 'butterfly', emoji: '🦋', name: '小蝴蝶', desc: '翩翩飞舞小蝴蝶' },
+];
+
+// Current month available pets (always include bunny)
+let monthlyPets = [];
+function getMonthlyPets() {
+  const now = new Date();
+  const monthKey = now.getFullYear() * 100 + (now.getMonth() + 1);
+  // Deterministic shuffle based on month
+  const others = petCatalog.filter(p => p.id !== 'bunny');
+  let seed = monthKey;
+  for (let i = others.length - 1; i > 0; i--) {
+    seed = (seed * 9301 + 49297) % 233280;
+    const j = seed % (i + 1);
+    [others[i], others[j]] = [others[j], others[i]];
+  }
+  // Always put bunny first, then 5 others
+  const bunny = petCatalog.find(p => p.id === 'bunny');
+  monthlyPets = [bunny, ...others.slice(0, 5)];
+  return monthlyPets;
+}
+
+// ===== Girl Guide Speech Content =====
+const girlSpeeches = {
+  'opening-ceremony': {
+    title: '🏗️ 装修时间到！',
+    content: '点击「开始装修」，我们全家一起动手，把小商店一点点建起来！屋顶、门窗、橱窗……每一处都由我们亲手完成！'
+  },
+  'hanging-ceremony': {
+    title: '🏪 挂牌开张！',
+    content: '点击那块牌匾，把我们的店名挂上去！挂好之后，掷骰子试试运气，点数×10就是你的启动资金哦！'
+  },
+  'rules-screen': {
+    title: '📜 看看规则吧！',
+    content: '每天完成阅读、复习、锻炼、练字四项打卡，重在发现自己的进步！坚持练习就有收获，全勤还有金币雨和惊喜礼物！连续30天全勤获得公主套装！'
+  },
+  'main-app': {
+    title: '🏠 欢迎来到商城！',
+    content: '这里是你的大本营！用上方标签切换功能：📋每日打卡、🐰宠物家园、🎁收藏柜、🏦家庭银行、🛍️兑换商店。有什么不懂随时点我！'
+  },
+  'checkin': {
+    title: '📋 打卡攻略',
+    content: '四项任务按需打卡，没完成的不用点评分，至少完成一项就能提交！🌟发现自己的进步=7金币，💪坚持练习10分钟=5金币，📖不足10分钟=3金币。四项全评「进步」或「坚持10分钟」算全勤！'
+  },
+  'collection': {
+    title: '🎁 收藏秘籍',
+    content: '每次全勤打卡都能获得一件虚拟装饰品，蝴蝶结、小皇冠、魔法杖……集齐30件就能解锁公主套装！'
+  },
+  'bank': {
+    title: '🏦 存钱生利息',
+    content: '把金币存进银行，达到里程碑就有利息奖励！500→+50，1000→+120，1500→+200，2000→+300。存折会记录每一笔哦！'
+  },
+  'pet': {
+    title: '🐰 宠物家园',
+    content: '领养一个宠物宝宝，给它取个名字！每天至少完成一项打卡，宠物就长高一点。坚持喂满一个月，奖励30金币！然后可以领养新宠物继续喂养～'
+  },
+  'pet-named': {
+    title: '🐰 宠物助手',
+    content: '你的宠物在右下角陪着你哦！每天打卡它就会长大，坚持30天领30金币奖励！'
+  },
+  'shop': {
+    title: '🛍️ 兑换攻略',
+    content: '攒够金币就可以兑换实物啦！1金币=1角钱。选好商品点兑换，爸妈线下给你买单！花出去的金币会从账户扣除。'
+  }
+};
+
+let currentScreen = 'opening-ceremony';
+let currentTab = 'checkin';
+let speechVisible = false;
+
+// ===== Save/Load =====
+function saveGame() {
+  localStorage.setItem('familyShopGame_v3', JSON.stringify(gameState));
+}
+
+function loadGame() {
+  const saved = localStorage.getItem('familyShopGame_v3');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    gameState = { ...gameState, ...parsed };
+    return true;
+  }
+  return false;
+}
+
+// ===== Screen Management =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  currentScreen = id;
+
+  // Show guide (pet or girl) after opening
+  if (id !== 'opening-ceremony') {
+    document.getElementById('guideGirl').style.display = 'block';
+    updateGuideAvatar();
+    showGirlSpeechForScreen(id);
+  }
+
+  // Hide guide on opening ceremony
+  if (id === 'opening-ceremony') {
+    document.getElementById('guideGirl').style.display = 'none';
+  }
+}
+
+// ===== Update Guide Avatar (pet or girl) =====
+function updateGuideAvatar() {
+  const pet = gameState.pet;
+  const defaultGuide = document.getElementById('guideDefault');
+  const petGuide = document.getElementById('guidePetAvatar');
+
+  if (pet.currentPetId && pet.petName) {
+    // Show pet avatar instead of girl
+    defaultGuide.style.display = 'none';
+    petGuide.style.display = 'flex';
+    const petInfo = petCatalog.find(p => p.id === pet.currentPetId);
+    document.getElementById('guidePetName').textContent = pet.petName;
+    document.getElementById('guidePetEmoji').textContent = petInfo ? petInfo.emoji : '🐰';
+  } else {
+    // Show girl avatar
+    defaultGuide.style.display = 'block';
+    petGuide.style.display = 'none';
+  }
+}
+
+// ===== Girl Speech =====
+function showGirlSpeechForScreen(screenId) {
+  const speech = girlSpeeches[screenId];
+  if (speech) {
+    document.getElementById('speechTitle').textContent = speech.title;
+    document.getElementById('speechContent').textContent = speech.content;
+    // Auto show
+    setTimeout(() => {
+      document.getElementById('speechBubble').classList.add('show');
+      speechVisible = true;
+    }, 800);
+    // Auto hide after 6s
+    setTimeout(() => {
+      hideGirlSpeech();
+    }, 8000);
+  }
+}
+
+function toggleGirlSpeech() {
+  if (speechVisible) {
+    hideGirlSpeech();
+  } else {
+    // Show speech for current context
+    const screenId = currentScreen;
+    let contextId = screenId;
+    if (screenId === 'main-app') {
+      contextId = currentTab;
+    }
+    if (contextId === 'pet' && gameState.pet.currentPetId && gameState.pet.petName) {
+      contextId = 'pet-named';
+    }
+    const speech = girlSpeeches[contextId] || girlSpeeches['main-app'];
+    let title = speech.title;
+    let content = speech.content;
+    if (gameState.pet.currentPetId && gameState.pet.petName) {
+      content = content.replace(/你的宠物/g, gameState.pet.petName);
+    }
+    document.getElementById('speechTitle').textContent = title;
+    document.getElementById('speechContent').textContent = content;
+    document.getElementById('speechBubble').classList.add('show');
+    speechVisible = true;
+  }
+}
+
+function hideGirlSpeech() {
+  document.getElementById('speechBubble').classList.remove('show');
+  speechVisible = false;
+}
+
+// ===== Opening Ceremony — Enhanced Shop Decoration =====
+let decorStep = 0;
+const decorSequence = [
+  'shopBody',      // building body
+  'shopRoof',      // roof
+  'shopChimney',   // chimney
+  'shopSmoke',     // smoke
+  'shopAwning',    // awning
+  'shopWindows',   // display windows
+  'shopShelf',     // shelf with items
+  'shopDoor',      // door
+  'shopSignBoard', // sign board
+  'shopFlag',      // flag
+  'shopFlowerL',   // left flower box
+  'shopFlowerR',   // right flower box
+  'dec1',          // bird
+  'dec2',          // star
+  'dec3',          // plant
+  'dec4',          // flower
+];
+
+function startDecoration() {
+  const btn = document.getElementById('decorateBtn');
+  btn.disabled = true;
+  btn.textContent = '装修中...';
+
+  // Show girl guide
+  document.getElementById('guideGirl').style.display = 'block';
+  setTimeout(() => {
+    const speech = girlSpeeches['opening-ceremony'];
+    document.getElementById('speechTitle').textContent = speech.title;
+    document.getElementById('speechContent').textContent = '看！商店正在一点点建起来，每一步都是我们全家人的功劳！';
+    document.getElementById('speechBubble').classList.add('show');
+    speechVisible = true;
+    setTimeout(() => hideGirlSpeech(), 6000);
+  }, 500);
+
+  function nextDecor() {
+    if (decorStep < decorSequence.length) {
+      const el = document.getElementById(decorSequence[decorStep]);
+      if (el) {
+        el.style.opacity = '1';
+        el.style.transition = 'all 0.6s ease';
+        if (el.classList.contains('decoration-item')) {
+          el.classList.add('placed');
+        }
+      }
+      // Sparkles on the building
+      const build = document.getElementById('shopBuilding');
+      for (let i = 0; i < 4; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = (Math.random() * 300 + 30) + 'px';
+        sparkle.style.top = (Math.random() * 350 + 20) + 'px';
+        sparkle.style.animationDelay = (Math.random() * 0.3) + 's';
+        build.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 2000);
+      }
+      decorStep++;
+      setTimeout(nextDecor, 400);
+    } else {
+      btn.textContent = '🎉 装修完成！';
+      btn.classList.add('pulse');
+      btn.onclick = () => showScreen('hanging-ceremony');
+      btn.disabled = false;
+      launchConfetti();
+      showToast('🏪 商店装修完成！好漂亮！');
+    }
+  }
+  nextDecor();
+}
+
+function launchConfetti() {
+  const colors = ['#FF69B4', '#FFD700', '#87CEEB', '#98FB98', '#DDA0DD', '#FFA500', '#FF1493'];
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const conf = document.createElement('div');
+      conf.className = 'confetti-piece';
+      conf.style.left = Math.random() * 100 + '%';
+      conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+      conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      conf.style.width = (6 + Math.random() * 8) + 'px';
+      conf.style.height = (6 + Math.random() * 8) + 'px';
+      document.body.appendChild(conf);
+      setTimeout(() => conf.remove(), 3000);
+    }, i * 50);
+  }
+}
+
+// ===== Hanging Sign =====
+function hangSign() {
+  const sign = document.getElementById('hangingSign');
+  if (sign.classList.contains('hung')) return;
+  sign.classList.add('hung');
+  sign.style.cursor = 'default';
+
+  showToast('🏪 挂牌成功！商城正式开张！');
+  launchConfetti();
+
+  // Girl speech
+  setTimeout(() => {
+    const speech = girlSpeeches['hanging-ceremony'];
+    document.getElementById('speechTitle').textContent = speech.title;
+    document.getElementById('speechContent').textContent = '太好了！店名挂上去了！现在来掷骰子吧，点数×10就是你的启动资金！';
+    document.getElementById('speechBubble').classList.add('show');
+    speechVisible = true;
+    setTimeout(() => hideGirlSpeech(), 5000);
+  }, 1200);
+
+  setTimeout(() => {
+    document.getElementById('diceSection').style.display = 'block';
+    document.getElementById('diceSection').classList.add('fade-in');
+  }, 1000);
+}
+
+// ===== Dice =====
+let diceRolling = false;
+function rollDice() {
+  if (diceRolling) return;
+  diceRolling = true;
+
+  const dice = document.getElementById('dice');
+  const face = document.getElementById('diceFace');
+  dice.classList.add('rolling');
+
+  let rollCount = 0;
+  const rollInterval = setInterval(() => {
+    const num = Math.floor(Math.random() * 6) + 1;
+    face.innerHTML = createDiceFace(num);
+    rollCount++;
+    if (rollCount > 15) {
+      clearInterval(rollInterval);
+      dice.classList.remove('rolling');
+
+      const finalNum = Math.floor(Math.random() * 6) + 1;
+      face.innerHTML = createDiceFace(finalNum);
+
+      const coins = finalNum * 10;
+      gameState.coins = coins;
+      gameState.totalEarned = coins;
+      gameState.initialized = true;
+      gameState.startDate = new Date().toISOString().split('T')[0];
+      saveGame();
+
+      const result = document.getElementById('diceResult');
+      result.style.display = 'block';
+      result.innerHTML = `${finalNum} 点 × 10 = <span style="color:var(--gold-dark)">${coins}</span> 金币！`;
+
+      showToast(`🎉 获得 ${coins} 初始金币！`);
+      triggerCoinRain(8);
+      playSFX('coin');
+
+      // Girl reaction
+      setTimeout(() => {
+        document.getElementById('speechTitle').textContent = '🎉 好运气！';
+        document.getElementById('speechContent').textContent = `哇！你掷出了${finalNum}点，获得了${coins}金币的启动资金！快点击「进入商城」开始你的冒险吧！`;
+        document.getElementById('speechBubble').classList.add('show');
+        speechVisible = true;
+        setTimeout(() => hideGirlSpeech(), 5000);
+      }, 500);
+
+      document.getElementById('enterShopBtn').style.display = 'inline-block';
+      diceRolling = false;
+    }
+  }, 80);
+}
+
+function createDiceFace(num) {
+  const layouts = {
+    1: [[1,1]], 2: [[0,0],[2,2]], 3: [[0,0],[1,1],[2,2]],
+    4: [[0,0],[0,2],[2,0],[2,2]], 5: [[0,0],[0,2],[1,1],[2,0],[2,2]],
+    6: [[0,0],[0,2],[1,0],[1,2],[2,0],[2,2]]
+  };
+  let html = '<div style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); width:80px; height:80px; gap:2px;">';
+  const grid = Array(9).fill(false);
+  layouts[num].forEach(([r,c]) => grid[r*3+c] = true);
+  for (let i = 0; i < 9; i++) {
+    html += grid[i] ? '<div class="dot"></div>' : '<div></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function enterMainApp() {
+  showScreen('rules-screen');
+}
+
+// ===== Tab Switching =====
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tabName).classList.add('active');
+  currentTab = tabName;
+
+  if (tabName === 'bank') updateBankDisplay();
+  if (tabName === 'collection') updateCollectionDisplay();
+  if (tabName === 'shop') updateShopDisplay();
+  if (tabName === 'pet') updatePetDisplay();
+
+  // Speech for tab (use pet-named if pet is adopted and named)
+  hideGirlSpeech();
+  let speechKey = tabName;
+  if (tabName === 'pet' && gameState.pet.currentPetId && gameState.pet.petName) {
+    speechKey = 'pet-named';
+  }
+  const speech = girlSpeeches[speechKey];
+  if (speech) {
+    // Update speech bubble content based on pet or girl
+    let title = speech.title;
+    let content = speech.content;
+    if (gameState.pet.currentPetId && gameState.pet.petName) {
+      const petInfo = petCatalog.find(p => p.id === gameState.pet.currentPetId);
+      content = content.replace(/你的宠物/g, gameState.pet.petName);
+      title = title.replace('🐰', petInfo ? petInfo.emoji : '🐰');
+    }
+    setTimeout(() => {
+      document.getElementById('speechTitle').textContent = title;
+      document.getElementById('speechContent').textContent = content;
+      document.getElementById('speechBubble').classList.add('show');
+      speechVisible = true;
+      setTimeout(() => hideGirlSpeech(), 6000);
+    }, 500);
+  }
+}
+
+// ===== Rating System =====
+const ratingValues = { excellent: 7, good: 5, average: 3, poor: 1 };
+const ratingLabels = { excellent: '发现自己的进步7', good: '坚持练习(10分钟)5', average: '坚持练习(不足10分钟)3', poor: '' };
+
+function rate(task, rating) {
+  gameState.todayRatings[task] = rating;
+  const taskEl = document.getElementById('task-' + task);
+  const btns = taskEl.querySelectorAll('.rating-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  btns.forEach(b => { if (b.classList.contains(rating)) b.classList.add('selected'); });
+  saveGame();
+}
+
+function cancelRate(task) {
+  gameState.todayRatings[task] = null;
+  const taskEl = document.getElementById('task-' + task);
+  const btns = taskEl.querySelectorAll('.rating-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  saveGame();
+}
+
+// ===== Complete Day =====
+function completeDay() {
+  const { reading, review, sports, calligraphy } = gameState.todayRatings;
+
+  // 未评分的项目记为0金币，允许部分完成
+  if (!reading && !review && !sports && !calligraphy) {
+    showToast('⚠️ 至少完成一项打卡才能提交！');
+    document.getElementById('completeDayBtn').classList.add('shake');
+    setTimeout(() => document.getElementById('completeDayBtn').classList.remove('shake'), 500);
+    return;
+  }
+
+  const rated = { reading, review, sports, calligraphy };
+  let dayCoins = 0;
+  let ratedCount = 0;
+  for (const [key, val] of Object.entries(rated)) {
+    if (val) { dayCoins += ratingValues[val]; ratedCount++; }
+  }
+  const today = new Date().toISOString().split('T')[0];
+  if (gameState.checkedDays.includes(today)) {
+    showToast('⚠️ 今天已经打过卡了！');
+    return;
+  }
+
+  gameState.coins += dayCoins;
+  gameState.totalEarned += dayCoins;
+  gameState.checkedDays.push(today);
+  addPassbookEntry(today, '打卡奖励', dayCoins, '+');
+
+  // 全勤：4项全部完成且都评了优良
+  const isPerfect = reading && review && sports && calligraphy &&
+    [reading, review, sports, calligraphy].every(r => r === 'excellent' || r === 'good');
+
+  if (isPerfect) {
+    gameState.perfectDays++;
+    const availableItems = virtualItems.filter(item => !gameState.collectedItems.includes(item.emoji));
+    if (availableItems.length > 0) {
+      const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+      gameState.collectedItems.push(randomItem.emoji);
+      setTimeout(() => {
+        showModal('🎁 全勤奖励！', `获得虚拟物品：${randomItem.emoji} ${randomItem.name}`);
+      }, 1500);
+    }
+    if (gameState.perfectDays >= 30 && !gameState.princessUnlocked) {
+      gameState.princessUnlocked = true;
+      setTimeout(() => {
+        showModal('👸 公主套装解锁！', '恭喜你！连续30天全勤，获得公主套装！');
+        launchConfetti();
+        playSFX('princess');
+      }, 2500);
+    }
+  }
+
+  triggerCoinRain(dayCoins);
+  gameState.balanceHistory.push(gameState.coins);
+  gameState.day = gameState.checkedDays.length + 1;
+  gameState.todayRatings = { reading: null, review: null, sports: null, calligraphy: null };
+
+  // Pet growth: feed pet if adopted
+  if (gameState.pet.currentPetId) {
+    gameState.pet.growthDays++;
+    // Check 30-day reward
+    if (gameState.pet.growthDays >= 30 && !gameState.pet.rewardClaimed) {
+      gameState.pet.rewardClaimed = true;
+      gameState.coins += 30;
+      gameState.totalEarned += 30;
+      addPassbookEntry(today, '宠物喂养奖励(30天)', 30, '+');
+      setTimeout(() => {
+        showModal('🐰 宠物成长奖励！', `你坚持喂养${gameState.pet.petName}整整30天！\n奖励 30 金币！\n\n现在可以去宠物家园领养新宠物啦～`);
+        triggerCoinRain(6);
+        playSFX('levelup');
+      }, 2000);
+    }
+  }
+
+  saveGame();
+  updateMainDisplay();
+  showToast(`💰 今日获得 ${dayCoins} 金币！(${ratedCount}/4项完成)${isPerfect ? ' 🌟全勤奖励！' : ''}${gameState.pet.currentPetId ? ' 🐰宠物已喂养！' : ''}`);
+  playSFX(isPerfect ? 'checkin' : 'coin');
+  document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+
+  // Girl reaction
+  setTimeout(() => {
+    document.getElementById('speechTitle').textContent = isPerfect ? '🌟 太棒了！' : '💪 继续加油！';
+    document.getElementById('speechContent').textContent = isPerfect
+      ? `今天拿到了${dayCoins}金币，还是全勤哦！金币雨来了！`
+      : `今天拿到了${dayCoins}金币，明天争取拿更多！`;
+    document.getElementById('speechBubble').classList.add('show');
+    speechVisible = true;
+    setTimeout(() => hideGirlSpeech(), 4000);
+  }, 1000);
+}
+
+// ===== Coin Rain =====
+function triggerCoinRain(count) {
+  const container = document.getElementById('coinRain');
+  const numCoins = Math.min(count * 3, 50);
+  for (let i = 0; i < numCoins; i++) {
+    setTimeout(() => {
+      const coin = document.createElement('div');
+      coin.className = 'falling-coin';
+      coin.style.left = Math.random() * 100 + '%';
+      coin.style.animationDuration = (2 + Math.random() * 2) + 's';
+      coin.style.animationDelay = (Math.random() * 0.5) + 's';
+      coin.textContent = '¥';
+      container.appendChild(coin);
+      setTimeout(() => coin.remove(), 4500);
+    }, i * 60);
+  }
+}
+
+// ===== Pet Home Display =====
+function updatePetDisplay() {
+  const area = document.getElementById('petArea');
+  const pet = gameState.pet;
+  getMonthlyPets();
+
+  // No pet adopted yet — show adoption screen
+  if (!pet.currentPetId) {
+    let html = '<p style="font-size:16px; margin:10px 0;">🏠 选择一个宠物宝宝领养吧！</p>';
+    html += '<div class="pet-shop-grid">';
+    monthlyPets.forEach(p => {
+      html += `<div class="pet-shop-item" onclick="adoptPet('${p.id}')">
+        <div class="pet-emoji">${p.emoji}</div>
+        <div class="pet-type">${p.name}</div>
+      </div>`;
+    });
+    html += '</div>';
+    area.innerHTML = html;
+    return;
+  }
+
+  // Pet already adopted
+  const petInfo = petCatalog.find(p => p.id === pet.currentPetId);
+  if (!petInfo) return;
+
+  const growthPct = Math.min((pet.growthDays / 30) * 100, 100);
+  const hearts = '❤️'.repeat(Math.min(pet.growthDays, 10)) + (pet.growthDays > 10 ? '...' : '');
+
+  // Check if pet completed 30 days — show adopt new option
+  const canAdoptNew = pet.growthDays >= 30;
+
+  let html = '';
+
+  // Name not set yet
+  if (!pet.petName) {
+    html = `
+      <div style="margin:15px 0;">
+        <p style="font-size:18px; margin-bottom:10px;">🎉 你领养了一只${petInfo.name}！</p>
+        <div style="font-size:80px; margin:10px 0;">${petInfo.emoji}</div>
+        <p style="font-size:16px; margin-bottom:10px;">给它取个名字吧：</p>
+        <input type="text" class="pet-name-input" id="petNameInput" placeholder="输入名字" maxlength="8">
+        <br><br>
+        <button class="btn pink" onclick="confirmPetName()">✨ 确认名字</button>
+      </div>
+    `;
+    area.innerHTML = html;
+    return;
+  }
+
+  // Normal pet display
+  html = `
+    <div class="pet-display">
+      <div class="pet-name-tag">${pet.petName}</div>
+      <div class="pet-body" id="petBody">${petInfo.emoji}</div>
+      <div class="pet-owner">郑秀妍 的${petInfo.name}</div>
+    </div>
+    <div class="pet-hearts">${hearts}</div>
+    <div class="pet-growth-bar">
+      <div class="label">成长进度 ${pet.growthDays}/30 天</div>
+      <div class="pet-growth-bg">
+        <div class="pet-growth-fill" style="width:${growthPct}%"></div>
+      </div>
+    </div>
+    <div class="pet-days-info">
+      ${pet.growthDays < 30
+        ? `每天打卡至少一项，${pet.petName}就长高一点～<br>还需 <strong>${30 - pet.growthDays}</strong> 天即可领取30金币奖励！`
+        : `🎉 ${pet.petName}已经养满30天啦！奖励已发放！`
+      }
+    </div>
+  `;
+
+  // Reward banner
+  if (pet.rewardClaimed && pet.growthDays >= 30) {
+    html += `<div class="pet-reward-banner">🏆 30天喂养奖励已领取！+30金币</div>`;
+  }
+
+  // Adopt new pet button
+  if (canAdoptNew) {
+    html += `
+      <div style="margin-top:15px;">
+        <p style="font-size:15px; color:#888; margin-bottom:8px;">可以领养新宠物啦！</p>
+        <button class="btn" onclick="showNewPetSelection()">🐰 领养新宠物</button>
+      </div>
+      <div id="newPetArea" style="display:none; margin-top:10px;"></div>
+    `;
+  }
+
+  area.innerHTML = html;
+}
+
+function adoptPet(petId) {
+  gameState.pet = {
+    currentPetId: petId,
+    petName: '',
+    adoptDate: new Date().toISOString().split('T')[0],
+    growthDays: 0,
+    rewardClaimed: false
+  };
+  saveGame();
+  updatePetDisplay();
+}
+
+function confirmPetName() {
+  const input = document.getElementById('petNameInput');
+  const name = input.value.trim();
+  if (!name) {
+    showToast('⚠️ 请给宠物取个名字！');
+    return;
+  }
+  gameState.pet.petName = name;
+  saveGame();
+  updatePetDisplay();
+  updateGuideAvatar();
+  showToast(`🐰 ${name} 开始陪你啦！`);
+  playSFX('coin');
+
+  // Animate pet
+  setTimeout(() => {
+    const body = document.getElementById('petBody');
+    if (body) body.classList.add('happy');
+  }, 100);
+}
+
+function showNewPetSelection() {
+  const area = document.getElementById('newPetArea');
+  area.style.display = 'block';
+  getMonthlyPets();
+  let html = '<p style="font-size:15px; margin:8px 0;">选一个新伙伴吧：</p>';
+  html += '<div class="pet-shop-grid">';
+  monthlyPets.forEach(p => {
+    if (p.id !== gameState.pet.currentPetId) {
+      html += `<div class="pet-shop-item" onclick="adoptPet('${p.id}')">
+        <div class="pet-emoji">${p.emoji}</div>
+        <div class="pet-type">${p.name}</div>
+      </div>`;
+    }
+  });
+  html += '</div>';
+  area.innerHTML = html;
+}
+
+// ===== Virtual Items Display =====
+function updateCollectionDisplay() {
+  const grid = document.getElementById('itemsGrid');
+  grid.innerHTML = '';
+  virtualItems.forEach((item) => {
+    const collected = gameState.collectedItems.includes(item.emoji);
+    const card = document.createElement('div');
+    card.className = 'item-card ' + (collected ? 'collected item-appear' : 'locked');
+    card.innerHTML = `<div class="item-emoji">${item.emoji}</div><div class="item-name">${collected ? item.name : '???'}</div>`;
+    grid.appendChild(card);
+  });
+  const princessSet = document.getElementById('princessSet');
+  const princessEmoji = document.getElementById('princessEmoji');
+  const princessStatus = document.getElementById('princessStatus');
+  if (gameState.princessUnlocked) {
+    princessSet.classList.add('unlocked');
+    princessEmoji.textContent = '👸';
+    princessStatus.textContent = '🎉 已解锁！';
+    princessStatus.style.color = '#FF1493';
+  } else {
+    princessEmoji.textContent = '🔒';
+    princessStatus.textContent = `还需全勤 ${30 - gameState.perfectDays} 天`;
+    princessStatus.style.color = '#888';
+  }
+}
+
+// ===== Bank =====
+function updateBankDisplay() {
+  document.getElementById('bankBalance').textContent = gameState.bankBalance;
+  document.getElementById('walletBalance').textContent = gameState.coins;
+  [500, 1000, 1500, 2000].forEach(threshold => {
+    const el = document.getElementById('int' + threshold);
+    if (gameState.interestClaimed[threshold]) {
+      el.textContent = '✅ 已领取'; el.style.color = '#2d6a1e';
+    } else if (gameState.totalBanked >= threshold) {
+      el.textContent = '🎁 可领取'; el.style.color = '#FF8C00';
+    } else {
+      el.textContent = `🔒 还差${threshold - gameState.totalBanked}`; el.style.color = '#999';
+    }
+  });
+  updatePassbook();
+  drawBalanceChart();
+}
+
+function depositToBank() {
+  if (gameState.coins <= 0) { showToast('⚠️ 钱包里没有金币！'); return; }
+  const amount = gameState.coins;
+  gameState.coins = 0;
+  gameState.bankBalance += amount;
+  gameState.totalBanked += amount;
+  addPassbookEntry(new Date().toISOString().split('T')[0], '存入银行', amount, '+');
+  checkInterestMilestones();
+  gameState.balanceHistory.push(gameState.bankBalance + gameState.coins);
+  saveGame(); updateMainDisplay(); updateBankDisplay();
+  showToast(`💾 已存入 ${amount} 金币到银行！`);
+}
+
+function withdrawFromBank() {
+  if (gameState.bankBalance <= 0) { showToast('⚠️ 银行里没有金币！'); return; }
+  const amount = gameState.bankBalance;
+  gameState.bankBalance = 0;
+  gameState.coins += amount;
+  addPassbookEntry(new Date().toISOString().split('T')[0], '取出金币', amount, '-');
+  gameState.balanceHistory.push(gameState.bankBalance + gameState.coins);
+  saveGame(); updateMainDisplay(); updateBankDisplay();
+  showToast(`💸 已取出 ${amount} 金币！`);
+}
+
+function checkInterestMilestones() {
+  const milestones = { 500: 50, 1000: 120, 1500: 200, 2000: 300 };
+  for (const [threshold, reward] of Object.entries(milestones)) {
+    const t = parseInt(threshold);
+    if (gameState.totalBanked >= t && !gameState.interestClaimed[t]) {
+      gameState.interestClaimed[t] = true;
+      gameState.bankBalance += reward;
+      gameState.totalBanked += reward;
+      addPassbookEntry(new Date().toISOString().split('T')[0], `利息奖励(累计${t})`, reward, '+');
+      setTimeout(() => {
+        showModal('🎁 利息奖励！', `累计存款达到 ${t} 金币！\n额外奖励 ${reward} 金币！`);
+        triggerCoinRain(reward / 2);
+        launchConfetti();
+        playSFX('interest');
+      }, 500);
+    }
+  }
+}
+
+// ===== Passbook =====
+function addPassbookEntry(date, desc, amount, type) {
+  gameState.passbookEntries.push({ date, desc, amount, type });
+  saveGame();
+}
+
+function updatePassbook() {
+  const container = document.getElementById('passbookEntries');
+  if (gameState.passbookEntries.length === 0) {
+    container.innerHTML = '<p style="text-align:center; color:#999; font-size:14px;">暂无记录</p>';
+    return;
+  }
+  let html = '';
+  const entries = [...gameState.passbookEntries].reverse();
+  entries.forEach(entry => {
+    html += `<div class="passbook-entry">
+      <span class="date">${entry.date}</span>
+      <span class="desc">${entry.desc}</span>
+      <span class="amount ${entry.type === '+' ? 'positive' : 'negative'}">${entry.type}${entry.amount}</span>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function drawBalanceChart() {
+  const canvas = document.getElementById('balanceChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width - 20; canvas.height = rect.height - 20;
+  const data = gameState.balanceHistory;
+  if (data.length < 2) return;
+  const w = canvas.width, h = canvas.height, maxVal = Math.max(...data, 10), padding = 20;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = '#e8e8e8'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding + (h - 2*padding) * i / 4;
+    ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w-padding, y); ctx.stroke();
+  }
+  ctx.strokeStyle = '#5a9e3e'; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.beginPath();
+  const stepX = (w - 2*padding) / (data.length - 1);
+  data.forEach((val, i) => {
+    const x = padding + i * stepX;
+    const y = h - padding - (val/maxVal) * (h - 2*padding);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  const lastX = padding + (data.length-1) * stepX;
+  ctx.lineTo(lastX, h-padding); ctx.lineTo(padding, h-padding); ctx.closePath();
+  ctx.fillStyle = 'rgba(90,158,62,0.15)'; ctx.fill();
+  data.forEach((val, i) => {
+    const x = padding + i * stepX;
+    const y = h - padding - (val/maxVal) * (h - 2*padding);
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#5a9e3e'; ctx.fill();
+    ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+  });
+  ctx.fillStyle = '#666'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const val = Math.round(maxVal * (4-i) / 4);
+    const y = padding + (h-2*padding) * i / 4 + 4;
+    ctx.fillText(val, padding - 4, y);
+  }
+}
+
+// ===== Shop =====
+function updateShopDisplay() {
+  const container = document.getElementById('shopItems');
+  container.innerHTML = '';
+  shopItemsData.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'shop-item';
+    card.innerHTML = `
+      <div class="shop-item-emoji">${item.emoji}</div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-price">${item.price} 金币</div>
+      <button class="btn" style="padding:6px 16px; font-size:13px;" onclick="exchangeItem('${item.name}', ${item.price})">兑换</button>
+    `;
+    container.appendChild(card);
+  });
+  const history = document.getElementById('exchangeHistory');
+  if (gameState.exchangeHistory.length === 0) {
+    history.innerHTML = '<p style="text-align:center; color:#999; font-size:14px;">暂无兑换记录</p>';
+  } else {
+    history.innerHTML = gameState.exchangeHistory.map(h =>
+      `<div class="passbook-entry">
+        <span class="date">${h.date}</span>
+        <span class="desc">${h.item}</span>
+        <span class="amount negative">-${h.price}金币(¥${(h.price/10).toFixed(1)})</span>
+      </div>`
+    ).join('');
+  }
+}
+
+function exchangeItem(name, price) {
+  const totalCoins = gameState.coins + gameState.bankBalance;
+  if (totalCoins < price) { showToast(`⚠️ 金币不足！需要 ${price} 金币`); return; }
+  if (!confirm(`确定要用 ${price} 金币兑换「${name}」吗？\n(相当于 ¥${(price/10).toFixed(1)})`)) return;
+  if (gameState.coins >= price) { gameState.coins -= price; }
+  else { const fromBank = price - gameState.coins; gameState.coins = 0; gameState.bankBalance -= fromBank; }
+  gameState.exchangeHistory.push({ date: new Date().toISOString().split('T')[0], item: name, price: price });
+  addPassbookEntry(new Date().toISOString().split('T')[0], `兑换: ${name}`, price, '-');
+  gameState.balanceHistory.push(gameState.bankBalance + gameState.coins);
+  saveGame(); updateMainDisplay(); updateShopDisplay();
+  showToast(`🛍️ 成功兑换「${name}」！`);
+}
+
+// ===== Level System =====
+function getCurrentLevel() {
+  let level = levels[0];
+  for (let i = levels.length - 1; i >= 0; i--) {
+    if (gameState.totalEarned >= levels[i].min) { level = levels[i]; break; }
+  }
+  return level;
+}
+
+function getNextLevel() {
+  const current = getCurrentLevel();
+  const idx = levels.indexOf(current);
+  if (idx < levels.length - 1) return levels[idx + 1];
+  return null;
+}
+
+function updateLevelDisplay() {
+  const current = getCurrentLevel();
+  const next = getNextLevel();
+  document.getElementById('levelBadge').textContent = current.icon + ' ' + current.name;
+  document.getElementById('levelCurrent').textContent = '当前: ' + current.name;
+  if (next) {
+    document.getElementById('levelNext').textContent = `下一级: ${next.name} (${next.min})`;
+    const progress = ((gameState.totalEarned - current.min) / (next.min - current.min)) * 100;
+    document.getElementById('levelProgress').style.width = Math.min(progress, 100) + '%';
+  } else {
+    document.getElementById('levelNext').textContent = '最高等级！';
+    document.getElementById('levelProgress').style.width = '100%';
+  }
+}
+
+function updateMainDisplay() {
+  document.getElementById('coinAmount').textContent = gameState.coins + gameState.bankBalance;
+  document.getElementById('dayCount').textContent = gameState.checkedDays.length + 1;
+  updateLevelDisplay();
+  updateDayStamps();
+}
+
+function updateDayStamps() {
+  const container = document.getElementById('dayStamps');
+  container.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0];
+  for (let i = 1; i <= 30; i++) {
+    const stamp = document.createElement('div');
+    stamp.className = 'day-stamp';
+    if (gameState.startDate) {
+      const start = new Date(gameState.startDate);
+      const stampDate = new Date(start);
+      stampDate.setDate(start.getDate() + i - 1);
+      const dateStr = stampDate.toISOString().split('T')[0];
+      if (gameState.checkedDays.includes(dateStr)) { stamp.classList.add('checked'); stamp.textContent = '✓'; }
+      else if (dateStr === today) { stamp.classList.add('today'); stamp.textContent = i; }
+      else { stamp.textContent = i; }
+    } else { stamp.textContent = i; }
+    container.appendChild(stamp);
+  }
+  document.getElementById('perfectDays').textContent = gameState.perfectDays;
+}
+
+function setTodayDate() {
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()}`;
+  const el = document.getElementById('todayDate');
+  if (el) el.textContent = dateStr;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function showModal(title, content) {
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modalContent');
+  modalContent.innerHTML = `<h2>${title}</h2><p style="font-size:18px; line-height:1.6; white-space:pre-line;">${content}</p>
+    <button class="btn" onclick="closeModal()" style="margin-top:15px;">好的！</button>`;
+  modal.classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+// ===== Init =====
+function init() {
+  const hasGame = loadGame();
+  if (hasGame && gameState.initialized) {
+    showScreen('main-app');
+    setTodayDate();
+    updateMainDisplay();
+    updateGuideAvatar();
+    const today = new Date().toISOString().split('T')[0];
+    if (gameState.checkedDays.includes(today)) {
+      document.getElementById('completeDayBtn').textContent = '✅ 今日已完成打卡';
+      document.getElementById('completeDayBtn').disabled = true;
+      document.getElementById('completeDayBtn').style.opacity = '0.6';
+    }
+  } else {
+    showScreen('opening-ceremony');
+  }
+}
+
+function resetGame() {
+  if (confirm('确定要重置所有数据吗？这将清除所有进度！')) {
+    localStorage.removeItem('familyShopGame_v3');
+    location.reload();
+  }
+}
+
+window.resetGame = resetGame;
+
+// ===== Web Audio API — Game Music Engine =====
+let audioCtx = null;
+let musicPlaying = false;
+let musicGain = null;
+let melodyTimeout = null;
+
+const NOTES = {
+  C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392.00,
+  A4:440.00,B4:493.88,C5:523.25,D5:587.33,E5:659.25,
+  F5:698.46,G5:783.99,A5:880.00,
+  C3:130.81,E3:164.81,F3:174.61,G3:196.00,A3:220.00,
+  B3:246.94,D3:146.83
+};
+
+const melodies = {
+  main: [
+    {n:'E4',d:0.25},{n:'G4',d:0.25},{n:'A4',d:0.5},
+    {n:'G4',d:0.25},{n:'A4',d:0.25},{n:'B4',d:0.5},
+    {n:'C5',d:0.25},{n:'B4',d:0.25},{n:'A4',d:0.5},
+    {n:'G4',d:0.25},{n:'E4',d:0.25},{n:'D4',d:0.5},
+    {n:'E4',d:0.25},{n:'G4',d:0.25},{n:'A4',d:0.75},
+    {n:'G4',d:0.25},
+    {n:'A4',d:0.25},{n:'B4',d:0.25},{n:'C5',d:0.25},
+    {n:'D5',d:0.5},{n:'C5',d:0.25},{n:'B4',d:0.25},
+    {n:'A4',d:0.5},{n:'G4',d:0.25},{n:'A4',d:0.25},
+    {n:'G4',d:0.75},{n:null,d:0.25},
+    {n:'C5',d:0.25},{n:'D5',d:0.25},{n:'E5',d:0.5},
+    {n:'D5',d:0.25},{n:'C5',d:0.25},{n:'B4',d:0.5},
+    {n:'A4',d:0.25},{n:'G4',d:0.25},{n:'A4',d:0.5},
+    {n:'B4',d:0.75},{n:null,d:0.25},
+    {n:'C5',d:0.25},{n:'B4',d:0.25},{n:'A4',d:0.25},{n:'G4',d:0.25},
+    {n:'E4',d:0.5},{n:'D4',d:0.25},{n:'E4',d:0.25},
+    {n:'G4',d:0.5},{n:'A4',d:0.25},{n:'G4',d:0.25},
+    {n:'E4',d:0.75},{n:null,d:0.25},
+  ],
+  checkin: [
+    {n:'C5',d:0.15},{n:'E5',d:0.15},{n:'G5',d:0.15},
+    {n:'C5',d:0.15},{n:'E5',d:0.15},{n:'G5',d:0.4},
+    {n:'A5',d:0.15},{n:'G5',d:0.15},{n:'E5',d:0.3},
+  ],
+  coin: [
+    {n:'E5',d:0.1},{n:'G5',d:0.1},{n:'A5',d:0.15},
+    {n:'G5',d:0.1},{n:'E5',d:0.3},
+  ],
+  levelup: [
+    {n:'C5',d:0.15},{n:'E5',d:0.15},{n:'G5',d:0.15},
+    {n:'C5',d:0.15},{n:'E5',d:0.15},{n:'G5',d:0.15},
+    {n:'C5',d:0.5},
+  ],
+  interest: [
+    {n:'G4',d:0.2},{n:'A4',d:0.2},{n:'B4',d:0.2},
+    {n:'C5',d:0.2},{n:'D5',d:0.4},
+  ],
+  princess: [
+    {n:'E4',d:0.2},{n:'G4',d:0.2},{n:'A4',d:0.2},
+    {n:'B4',d:0.2},{n:'C5',d:0.2},{n:'D5',d:0.2},
+    {n:'E5',d:0.2},{n:'G5',d:0.6},
+  ]
+};
+
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  musicGain = audioCtx.createGain();
+  musicGain.gain.value = 0.15;
+  musicGain.connect(audioCtx.destination);
+}
+
+function playNote(freq, startTime, duration, type) {
+  if (!audioCtx) return;
+  type = type || 'triangle';
+  const osc = audioCtx.createOscillator();
+  const ng = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  ng.gain.setValueAtTime(0, startTime);
+  ng.gain.linearRampToValueAtTime(0.4, startTime + 0.03);
+  ng.gain.linearRampToValueAtTime(0.25, startTime + 0.08);
+  ng.gain.linearRampToValueAtTime(0.15, startTime + duration * 0.7);
+  ng.gain.linearRampToValueAtTime(0, startTime + duration);
+  osc.connect(ng);
+  ng.connect(musicGain);
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.05);
+}
+
+function playBassNote(freq, startTime, duration) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const ng = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq / 2;
+  ng.gain.setValueAtTime(0, startTime);
+  ng.gain.linearRampToValueAtTime(0.12, startTime + 0.05);
+  ng.gain.linearRampToValueAtTime(0.06, startTime + duration * 0.8);
+  ng.gain.linearRampToValueAtTime(0, startTime + duration);
+  osc.connect(ng);
+  ng.connect(musicGain);
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.05);
+}
+
+function playMelody(melodyName, loop) {
+  if (!audioCtx) initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const melody = melodies[melodyName];
+  if (!melody) return;
+  let time = audioCtx.currentTime + 0.1;
+  let totalDuration = 0;
+  const bassPattern = ['C3','G3','A3','E3','F3','C3','G3','C3'];
+  let bassIdx = 0, beatCount = 0;
+  melody.forEach(function(note) {
+    const dur = note.d * 0.65;
+    if (note.n) {
+      const freq = NOTES[note.n];
+      if (freq) {
+        playNote(freq, time, dur);
+        playNote(freq * 2, time, dur * 0.5, 'sine');
+      }
+      beatCount++;
+      if (beatCount % 2 === 1) {
+        const bn = bassPattern[bassIdx % bassPattern.length];
+        playBassNote(NOTES[bn], time, note.d * 0.9);
+        bassIdx++;
+      }
+    }
+    time += dur;
+    totalDuration += dur;
+  });
+  if (loop && musicPlaying) {
+    melodyTimeout = setTimeout(function() {
+      if (musicPlaying) playMelody(melodyName, true);
+    }, totalDuration * 1000 + 200);
+  }
+}
+
+function playSFX(sfxName) {
+  if (!audioCtx) initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (!musicPlaying) return;
+  const sfxGain = audioCtx.createGain();
+  sfxGain.gain.value = 0.25;
+  sfxGain.connect(audioCtx.destination);
+  const melody = melodies[sfxName];
+  if (!melody) return;
+  let time = audioCtx.currentTime + 0.05;
+  melody.forEach(function(note) {
+    const dur = note.d * 0.6;
+    if (note.n) {
+      const freq = NOTES[note.n];
+      if (freq) {
+        const osc = audioCtx.createOscillator();
+        const ng = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        ng.gain.setValueAtTime(0, time);
+        ng.gain.linearRampToValueAtTime(0.5, time + 0.02);
+        ng.gain.linearRampToValueAtTime(0, time + dur);
+        osc.connect(ng);
+        ng.connect(sfxGain);
+        osc.start(time);
+        osc.stop(time + dur + 0.05);
+      }
+    }
+    time += note.d * 0.6;
+  });
+}
+
+let noteInterval = null;
+function showMusicNotes() {
+  if (!musicPlaying) return;
+  const container = document.getElementById('musicNotes');
+  const ns = ['♪','♫','♬','♩'];
+  const note = document.createElement('span');
+  note.className = 'music-note';
+  note.textContent = ns[Math.floor(Math.random() * ns.length)];
+  note.style.left = Math.random() * 30 + 'px';
+  container.appendChild(note);
+  setTimeout(function() { note.remove(); }, 3000);
+}
+
+function startNoteAnim() {
+  if (noteInterval) return;
+  noteInterval = setInterval(function() {
+    if (musicPlaying) showMusicNotes();
+  }, 1500);
+}
+function stopNoteAnim() {
+  if (noteInterval) { clearInterval(noteInterval); noteInterval = null; }
+}
+
+function toggleMusic() {
+  initAudio();
+  if (musicPlaying) {
+    musicPlaying = false;
+    if (melodyTimeout) { clearTimeout(melodyTimeout); melodyTimeout = null; }
+    musicGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+    document.getElementById('musicBtn').classList.remove('playing');
+    document.getElementById('musicBtn').textContent = '🎵';
+    stopNoteAnim();
+  } else {
+    musicPlaying = true;
+    musicGain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.3);
+    document.getElementById('musicBtn').classList.add('playing');
+    document.getElementById('musicBtn').textContent = '🎶';
+    playMelody('main', true);
+    startNoteAnim();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
